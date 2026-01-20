@@ -1,0 +1,17 @@
+package com.coopvestafrica.app
+
+import io.flutter.app.FlutterApplication
+import io.flutter.plugin.common.PluginRegistry
+import io.flutter.plugins.firebase.core.FlutterFirebaseCorePlugin
+import io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingPlugin
+
+class Application : FlutterApplication(), PluginRegistry.PluginRegistrantCallback {
+    override fun onCreate() {
+        super.onCreate()
+        // Initialize Firebase
+    }
+
+    override fun registerWith(registry: PluginRegistry) {
+        // Register Firebase plugins
+    }
+}
