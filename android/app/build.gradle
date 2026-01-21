@@ -81,13 +81,13 @@ dependencies {
     implementation "androidx.activity:activity-ktx:1.8.2"
     implementation "androidx.multidex:multidex:2.0.1"
     
-    // Firebase - Explicit versions compatible with Flutter plugins
-    // These versions are verified to work with the Dart Firebase packages
-    implementation 'com.google.firebase:firebase-core:33.1.0'
-    implementation 'com.google.firebase:firebase-auth:33.1.0'
-    implementation 'com.google.firebase:cloud-firestore:33.1.0'
-    implementation 'com.google.firebase:firebase-storage:33.1.0'
-    implementation 'com.google.firebase:firebase-analytics:33.1.0'
-    implementation 'com.google.firebase:firebase-crashlytics:33.1.0'
-    implementation 'com.google.firebase:firebase-messaging:33.1.0'
+    // Firebase - Using versions compatible with Flutter plugins
+    // Version 32.7.0 is the latest stable version available in Maven repositories
+    implementation 'com.google.firebase:firebase-core:32.7.0'
+    implementation 'com.google.firebase:firebase-auth:32.7.0'
+    implementation 'com.google.firebase:cloud-firestore:32.7.0'
+    implementation 'com.google.firebase:firebase-storage:32.7.0'
+    implementation 'com.google.firebase:firebase-analytics:32.7.0'
+    implementation 'com.google.firebase:firebase-crashlytics:32.7.0'
+    implementation 'com.google.firebase:firebase-messaging:32.7.0'
 }
