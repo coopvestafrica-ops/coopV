@@ -81,13 +81,12 @@ dependencies {
     implementation "androidx.activity:activity-ktx:1.8.2"
     implementation "androidx.multidex:multidex:2.0.1"
     
-    // Firebase - Using BOM for version management
-    implementation platform('com.google.firebase:firebase-bom:33.1.0')
-    implementation 'com.google.firebase:firebase-core'
-    implementation 'com.google.firebase:firebase-messaging'
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-auth'
-    implementation 'com.google.firebase:cloud-firestore'
-    implementation 'com.google.firebase:firebase-storage'
-    implementation 'com.google.firebase:firebase-crashlytics'
+    // Firebase - Explicit versions matching Dart packages
+    implementation 'com.google.firebase:firebase-core:32.8.1'
+    implementation 'com.google.firebase:firebase-auth:32.8.1'
+    implementation 'com.google.firebase:cloud-firestore:32.8.1'
+    implementation 'com.google.firebase:firebase-storage:32.8.1'
+    implementation 'com.google.firebase:firebase-analytics:32.8.1'
+    implementation 'com.google.firebase:firebase-crashlytics:32.8.1'
+    implementation 'com.google.firebase:firebase-messaging:32.8.1'
 }
