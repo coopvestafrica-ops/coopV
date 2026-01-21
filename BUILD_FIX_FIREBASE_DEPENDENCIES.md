@@ -1,8 +1,8 @@
 # Firebase Dependency Fix Report
 **Date:** January 21, 2026  
-**Status:** ✅ FIXED
+**Status:** ✅ FIXED (Attempt 2)
 
-## Problem Identified
+## Problem Identified (Build Attempt 1)
 The build was failing due to incompatible Firebase dependencies:
 
 ```
@@ -10,13 +10,26 @@ Error: Because cloud_firestore >=5.0.0 <5.0.1 depends on firebase_core ^3.0.0
 and coopvest_mobile depends on firebase_core ^2.24.0, version solving failed.
 ```
 
-### Root Cause
+### Root Cause (Attempt 1)
 - **cloud_firestore ^5.0.0** requires **firebase_core ^3.x**
 - **firebase_core ^2.24.0** was locked to version 2.x
-- These two constraints were incompatible, causing dependency resolution to fail
+- These two constraints were incompatible
 
-## Solution Applied
-Updated all Firebase dependencies to compatible versions:
+## Problem Identified (Build Attempt 2)
+After first fix, a new conflict emerged:
+
+```
+Error: Because cloud_firestore 4.17.5 depends on firebase_core ^2.32.0 
+and coopvest_mobile depends on firebase_core ^3.0.0, version solving failed.
+```
+
+### Root Cause (Attempt 2)
+- **cloud_firestore ^4.17.5** requires **firebase_core ^2.32.0**
+- We had set **firebase_core ^3.0.0** (too high)
+- Need to use firebase_core 2.x series
+
+## Final Solution Applied
+Updated all Firebase packages to compatible versions that work together:
 
 ### Before (Incompatible)
 ```yaml
@@ -28,24 +41,24 @@ firebase_analytics: ^10.4.0
 firebase_crashlytics: ^3.3.0
 ```
 
-### After (Compatible)
+### After (Compatible - Final)
 ```yaml
-firebase_core: ^3.0.0          # Updated from 2.24.0
-firebase_auth: ^5.0.0          # Updated from 4.10.0
-cloud_firestore: ^4.17.5       # Downgraded from 5.0.0 (as suggested)
-firebase_storage: ^12.0.0      # Updated from 11.2.0
-firebase_analytics: ^11.0.0    # Updated from 10.4.0
-firebase_crashlytics: ^4.0.0   # Updated from 3.3.0
+firebase_core: ^2.32.0         # Updated from 2.24.0 (latest 2.x)
+firebase_auth: ^4.17.0         # Updated from 4.10.0
+cloud_firestore: ^4.17.5       # Downgraded from 5.0.0
+firebase_storage: ^11.7.0      # Updated from 11.2.0
+firebase_analytics: ^10.8.0    # Updated from 10.4.0
+firebase_crashlytics: ^3.5.0   # Updated from 3.3.0
 ```
 
-## Compatibility Matrix
+## Compatibility Matrix (Final)
 All Firebase packages now use compatible versions:
-- ✅ firebase_core ^3.0.0 - Base Firebase SDK
-- ✅ firebase_auth ^5.0.0 - Compatible with firebase_core ^3.0.0
-- ✅ cloud_firestore ^4.17.5 - Compatible with firebase_core ^2.24.0+
-- ✅ firebase_storage ^12.0.0 - Compatible with firebase_core ^3.0.0
-- ✅ firebase_analytics ^11.0.0 - Compatible with firebase_core ^3.0.0
-- ✅ firebase_crashlytics ^4.0.0 - Compatible with firebase_core ^3.0.0
+- ✅ firebase_core ^2.32.0 - Base Firebase SDK (latest 2.x)
+- ✅ firebase_auth ^4.17.0 - Compatible with firebase_core ^2.32.0
+- ✅ cloud_firestore ^4.17.5 - Compatible with firebase_core ^2.32.0
+- ✅ firebase_storage ^11.7.0 - Compatible with firebase_core ^2.32.0
+- ✅ firebase_analytics ^10.8.0 - Compatible with firebase_core ^2.32.0
+- ✅ firebase_crashlytics ^3.5.0 - Compatible with firebase_core ^2.32.0
 
 ## Changes Made
 **File Modified:** `pubspec.yaml`
