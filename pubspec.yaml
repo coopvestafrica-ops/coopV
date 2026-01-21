@@ -44,12 +44,13 @@ dependencies:
   flutter_local_notifications: ^17.1.2
 
   # Firebase (versions compatible with BOM 32.8.0)
-  firebase_core: ^2.24.0
-  firebase_auth: ^4.15.0
-  cloud_firestore: ^4.14.0
-  firebase_storage: ^11.6.0
-  firebase_analytics: ^10.7.0
-  firebase_crashlytics: ^3.4.0
+  firebase_core: ^2.20.0
+  firebase_auth: ^4.10.0
+  cloud_firestore: ^4.10.0
+  firebase_storage: ^11.2.0
+  firebase_analytics: ^10.4.0
+  firebase_crashlytics: ^3.3.0
+  firebase_messaging: ^14.6.0
 
   # UI & Design
   flutter_svg: ^2.0.0
