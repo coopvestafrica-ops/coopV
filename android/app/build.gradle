@@ -83,14 +83,15 @@ dependencies {
     implementation "androidx.multidex:multidex:2.0.1"
     
     // Firebase - Using BOM to manage all Firebase library versions
-    // The BOM ensures all Firebase libraries are compatible with each other
-    // Version 32.8.0 is what the Flutter plugins expect
+    // The BOM (Bill of Materials) handles version resolution for Android libraries
+    // DO NOT specify explicit versions - let BOM resolve them
+    // BOM version 32.8.0 is compatible with Flutter Firebase plugins
     implementation platform('com.google.firebase:firebase-bom:32.8.0')
-    implementation 'com.google.firebase:firebase-core:2.32.0'
-    implementation 'com.google.firebase:firebase-auth:4.16.0'
-    implementation 'com.google.firebase:cloud-firestore:4.17.5'
-    implementation 'com.google.firebase:firebase-storage:11.6.5'
-    implementation 'com.google.firebase:firebase-analytics:10.10.7'
-    implementation 'com.google.firebase:firebase-crashlytics:3.5.7'
-    implementation 'com.google.firebase:firebase-messaging:14.7.10'
+    implementation 'com.google.firebase:firebase-core'
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:cloud-firestore'
+    implementation 'com.google.firebase:firebase-storage'
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-messaging'
 }
