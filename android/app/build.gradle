@@ -82,13 +82,6 @@ dependencies {
     implementation "androidx.activity:activity-ktx:1.8.2"
     implementation "androidx.multidex:multidex:2.0.1"
     
-    // Firebase - Using BOM to manage all Firebase library versions
-    // This is the recommended way to ensure version compatibility
-    implementation platform('com.google.firebase:firebase-bom:33.1.0')
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-auth'
-    implementation 'com.google.firebase:cloud-firestore'
-    implementation 'com.google.firebase:firebase-storage'
-    implementation 'com.google.firebase:firebase-crashlytics'
-    implementation 'com.google.firebase:firebase-messaging'
+    // Firebase dependencies are managed by Flutter plugins.
+    // Manual implementation here can cause conflicts or resolution errors.
 }
