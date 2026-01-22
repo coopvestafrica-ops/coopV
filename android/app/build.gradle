@@ -86,11 +86,11 @@ dependencies {
     // The BOM ensures all Firebase libraries are compatible with each other
     // Version 32.8.0 is what the Flutter plugins expect
     implementation platform('com.google.firebase:firebase-bom:32.8.0')
-    implementation 'com.google.firebase:firebase-core'
-    implementation 'com.google.firebase:firebase-auth'
-    implementation 'com.google.firebase:cloud-firestore'
-    implementation 'com.google.firebase:firebase-storage'
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-crashlytics'
-    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-core:2.24.0'
+    implementation 'com.google.firebase:firebase-auth:4.10.0'
+    implementation 'com.google.firebase:cloud-firestore:4.10.0'
+    implementation 'com.google.firebase:firebase-storage:11.5.0'
+    implementation 'com.google.firebase:firebase-analytics:10.4.0'
+    implementation 'com.google.firebase:firebase-crashlytics:3.3.0'
+    implementation 'com.google.firebase:firebase-messaging:14.6.0'
 }
