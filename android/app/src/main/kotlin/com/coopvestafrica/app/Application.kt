@@ -2,7 +2,6 @@ package com.coopvestafrica.app
 
 import io.flutter.app.FlutterApplication
 import io.flutter.plugin.common.PluginRegistry
-import io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingPlugin
 
 class Application : FlutterApplication(), PluginRegistry.PluginRegistrantCallback {
     override fun onCreate() {
@@ -10,6 +9,8 @@ class Application : FlutterApplication(), PluginRegistry.PluginRegistrantCallbac
     }
 
     override fun registerWith(registry: PluginRegistry) {
-        FlutterFirebaseMessagingPlugin.registerWith(registry.registrarFor("io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingPlugin"))
+        // In modern Flutter, plugins are usually registered automatically via GeneratedPluginRegistrant.
+        // If manual registration is needed for background messaging, it's typically handled 
+        // within the plugin's own initialization or a custom registrant.
     }
 }
