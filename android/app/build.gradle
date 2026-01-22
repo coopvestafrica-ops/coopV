@@ -29,7 +29,7 @@ def projectDir = rootProject.projectDir
 android {
     namespace "com.coopvestafrica.app"
     compileSdk 36
-    ndkVersion "26.1.10909125"
+    ndkVersion "27.0.12077973"
 
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -86,4 +86,6 @@ flutter {
     
     // Firebase dependencies are managed by Flutter plugins.
     // Manual implementation here can cause conflicts or resolution errors.
+    implementation platform("com.google.firebase:firebase-bom:33.1.0")
+    implementation "com.google.firebase:firebase-messaging"
 }
