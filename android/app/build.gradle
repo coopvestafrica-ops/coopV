@@ -85,8 +85,8 @@ dependencies {
     // Firebase - Using BOM to manage all Firebase library versions
     // The BOM (Bill of Materials) handles version resolution for Android libraries
     // DO NOT specify explicit versions - let BOM resolve them
-    // BOM version 32.8.0 is compatible with Flutter Firebase plugins
-    implementation platform('com.google.firebase:firebase-bom:32.8.0')
+    // BOM version 33.1.0 is compatible with Flutter Firebase plugins
+    implementation platform('com.google.firebase:firebase-bom:33.1.0')
     implementation 'com.google.firebase:firebase-core'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:cloud-firestore'
