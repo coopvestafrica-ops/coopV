@@ -11,6 +11,7 @@ import '../loan/loan_dashboard_screen.dart';
 import '../wallet/wallet_dashboard_screen.dart';
 import '../savings/savings_goals_screen.dart';
 import '../rollover/rollover_eligibility_screen.dart';
+import '../loan/qr_scanner_screen.dart';
 
 /// Main Home Dashboard Screen
 class HomeDashboardScreen extends ConsumerWidget {
@@ -224,6 +225,24 @@ class HomeDashboardScreen extends ConsumerWidget {
                         userId: userId, 
                         userName: userName, 
                         userPhone: '',
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildActionButton(
+                context,
+                icon: Icons.qr_code_scanner,
+                label: 'Scan QR',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => QRScannerScreen(
+                        guarantorId: userId,
+                        guarantorName: userName,
                       ),
                     ),
                   );

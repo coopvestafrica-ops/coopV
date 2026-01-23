@@ -22,7 +22,9 @@ class EmailVerificationScreen extends ConsumerStatefulWidget {
 
 class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScreen> {
   late TextEditingController _emailController;
+  late TextEditingController _otpController;
   bool _isResending = false;
+  bool _isVerifying = false;
   int _cooldownSeconds = 0;
   Timer? _cooldownTimer;
   String? _errorMessage;
@@ -33,12 +35,14 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
   void initState() {
     super.initState();
     _emailController = TextEditingController(text: widget.email ?? '');
+    _otpController = TextEditingController();
     _checkVerificationStatus();
   }
 
   @override
   void dispose() {
     _emailController.dispose();
+    _otpController.dispose();
     _cooldownTimer?.cancel();
     super.dispose();
   }
@@ -151,6 +155,80 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
     }
   }
 
+  Future<void> _verifyOTP() async {
+    if (_emailController.text.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please enter your email address';
+      });
+      return;
+    }
+
+    if (_otpController.text.length < 6) {
+      setState(() {
+        _errorMessage = 'Please enter a valid 6-digit code';
+      });
+      return;
+    }
+
+    setState(() {
+      _isVerifying = true;
+      _errorMessage = null;
+      _successMessage = null;
+    });
+
+    try {
+      final response = await ApiClient().getDio().post(
+        '/api/v1/auth/verify-otp',
+        data: {
+          'email': _emailController.text,
+          'otp': _otpController.text,
+        },
+      );
+
+      if (mounted) {
+        final data = response.data;
+        
+        if (data['success'] == true) {
+          setState(() {
+            _isVerified = true;
+            _successMessage = 'Email verified successfully!';
+            _errorMessage = null;
+          });
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Email verified successfully!'),
+              backgroundColor: CoopvestColors.success,
+            ),
+          );
+          
+          // Navigate to home after a short delay
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              Navigator.of(context).pushReplacementNamed('/home');
+            }
+          });
+        } else {
+          setState(() {
+            _errorMessage = data['error'] ?? 'Invalid verification code';
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Verification failed. Please check the code and try again.';
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isVerifying = false;
+        });
+      }
+    }
+  }
+
   Future<void> _manuallyCheckVerification() async {
     await _checkVerificationStatus();
 
@@ -159,10 +237,14 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Email verified successfully!'),
-            backgroundColor: CoopvestTheme.lightTheme.primaryColor,
+            backgroundColor: CoopvestColors.success,
           ),
         );
         Navigator.of(context).pushReplacementNamed('/home');
+      } else {
+        setState(() {
+          _errorMessage = 'Email not yet verified. Please check your inbox or enter the OTP.';
+        });
       }
     }
   }
@@ -197,7 +279,7 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
                   _isVerified ? Icons.check_circle : Icons.mail_outline,
                   size: 50,
                   color: _isVerified 
-                      ? CoopvestTheme.lightTheme.primaryColor 
+                      ? CoopvestColors.success 
                       : CoopvestColors.primary,
                 ),
               ),
@@ -217,7 +299,7 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
               Text(
                 _isVerified
                     ? 'Your email has been verified. You can now access all features.'
-                    : 'Please enter your email address and click the link in the verification email we sent you.',
+                    : 'Please enter the 6-digit code sent to your email or click the link in the verification email.',
                 style: CoopvestTypography.bodyMedium.copyWith(
                   color: CoopvestColors.mediumGray,
                 ),
@@ -225,17 +307,32 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
               ),
               const SizedBox(height: 32),
 
-              // Email Input
+              // Email & OTP Inputs
               if (!_isVerified) ...[
                 AppTextField(
                   label: 'Email Address',
                   hint: 'Enter your registered email',
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.done,
+                  textInputAction: TextInputAction.next,
                   prefixIcon: const Padding(
                     padding: EdgeInsets.only(left: 12),
                     child: Icon(Icons.mail_outline, color: CoopvestColors.primary),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
+                AppTextField(
+                  label: 'Verification Code (OTP)',
+                  hint: 'Enter 6-digit code',
+                  controller: _otpController,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.done,
+                  maxLength: 6,
+                  showCounter: true,
+                  prefixIcon: const Padding(
+                    padding: EdgeInsets.only(left: 12),
+                    child: Icon(Icons.lock_outline, color: CoopvestColors.primary),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -244,6 +341,7 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
                 if (_errorMessage != null)
                   Container(
                     padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(bottom: 24),
                     decoration: BoxDecoration(
                       color: CoopvestColors.errorLight,
                       borderRadius: BorderRadius.circular(8),
@@ -268,29 +366,38 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
                 if (_successMessage != null)
                   Container(
                     padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(bottom: 24),
                     decoration: BoxDecoration(
-                      color: CoopvestTheme.lightTheme.primaryColor.withAlpha((255 * 0.1).toInt()),
+                      color: CoopvestColors.success.withAlpha((255 * 0.1).toInt()),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.check_circle_outline,
-                          color: CoopvestTheme.lightTheme.primaryColor,
+                          color: CoopvestColors.success,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             _successMessage!,
                             style: CoopvestTypography.bodySmall.copyWith(
-                              color: CoopvestTheme.lightTheme.primaryColor,
+                              color: CoopvestColors.success,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                const SizedBox(height: 24),
+
+                // Verify Button
+                PrimaryButton(
+                  label: 'Verify Code',
+                  onPressed: _verifyOTP,
+                  isLoading: _isVerifying,
+                  width: double.infinity,
+                ),
+                const SizedBox(height: 16),
 
                 // Resend Button with Cooldown
                 _isResending
@@ -335,7 +442,7 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
                           )
                         : Column(
                             children: [
-                              PrimaryButton(
+                              SecondaryButton(
                                 label: 'Resend Verification Email',
                                 onPressed: _resendVerificationEmail,
                                 width: double.infinity,
@@ -380,7 +487,7 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
                   children: [
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.lightbulb_outline,
                           color: CoopvestColors.primary,
                           size: 20,
@@ -399,7 +506,7 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
                     Text(
                       '• Check your spam/junk folder\n'
                       '• Make sure you entered the correct email\n'
-                      '• The verification link expires in 24 hours',
+                      '• The verification code expires in 24 hours',
                       style: CoopvestTypography.bodySmall.copyWith(
                         color: CoopvestColors.mediumGray,
                       ),
