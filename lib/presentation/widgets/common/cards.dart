@@ -33,7 +33,7 @@ class AppCard extends StatelessWidget {
         color: backgroundColor ?? CoopvestColors.white,
         shape: RoundedRectangleBorder(
           borderRadius: borderRadius ?? BorderRadius.circular(12),
-          side: border as BorderSide? ?? BorderSide.none,
+          side: border?.top ?? BorderSide.none,
         ),
         child: InkWell(
           onTap: onTap,
