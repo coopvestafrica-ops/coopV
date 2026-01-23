@@ -1,8 +1,8 @@
 package com.coopvestafrica.app
 
-import io.flutter.app.FlutterApplication
+import android.app.Application
 
-class Application : FlutterApplication() {
+class Application : Application() {
     override fun onCreate() {
         super.onCreate()
     }
