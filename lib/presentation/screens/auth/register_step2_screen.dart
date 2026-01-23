@@ -4,14 +4,14 @@ import '../../../config/theme_config.dart';
 import '../../../core/services/api_service.dart';
 import '../../widgets/common/buttons.dart';
 
-/// Registration Step 2 - Phone Verification with OTP - Real API Integration
+/// Registration Step 2 - Email Verification with OTP - Real API Integration
 class RegisterStep2Screen extends ConsumerStatefulWidget {
-  final String phone;
+  final String email;
   final Map<String, String> registrationData;
 
   const RegisterStep2Screen({
     Key? key,
-    required this.phone,
+    required this.email,
     required this.registrationData,
   }) : super(key: key);
 
@@ -67,6 +67,7 @@ class _RegisterStep2ScreenState extends ConsumerState<RegisterStep2Screen> {
     setState(() {
       _remainingSeconds = 60;
       _canResend = false;
+      _isResending = true;
       for (var controller in _otpControllers) {
         controller.clear();
       }
@@ -74,11 +75,11 @@ class _RegisterStep2ScreenState extends ConsumerState<RegisterStep2Screen> {
     _startTimer();
 
     try {
-      // Call API to resend OTP
+      // Call API to resend OTP to email
       final response = await _apiService.post(
         '/auth/resend-otp',
         data: {
-          'phone': widget.phone,
+          'email': widget.email,
         },
       );
 
@@ -89,7 +90,7 @@ class _RegisterStep2ScreenState extends ConsumerState<RegisterStep2Screen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('OTP sent successfully'),
+            content: Text('OTP sent to your email successfully'),
             backgroundColor: CoopvestColors.success,
           ),
         );
@@ -102,6 +103,12 @@ class _RegisterStep2ScreenState extends ConsumerState<RegisterStep2Screen> {
             backgroundColor: CoopvestColors.error,
           ),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isResending = false;
+        });
       }
     }
   }
@@ -139,11 +146,11 @@ class _RegisterStep2ScreenState extends ConsumerState<RegisterStep2Screen> {
     });
 
     try {
-      // Call API to verify OTP
+      // Call API to verify OTP using email
       final response = await _apiService.post(
         '/auth/verify-otp',
         data: {
-          'phone': widget.phone,
+          'email': widget.email,
           'otp': otp,
         },
       );
@@ -188,7 +195,7 @@ class _RegisterStep2ScreenState extends ConsumerState<RegisterStep2Screen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Verify Phone',
+          'Verify Email',
           style: CoopvestTypography.headlineLarge.copyWith(
             color: CoopvestColors.darkGray,
           ),
@@ -245,14 +252,14 @@ class _RegisterStep2ScreenState extends ConsumerState<RegisterStep2Screen> {
 
               // Header
               Text(
-                'Verify Your Phone Number',
+                'Verify Your Email Address',
                 style: CoopvestTypography.headlineMedium.copyWith(
                   color: CoopvestColors.darkGray,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                'We sent a 6-digit code to ${widget.phone}',
+                'We sent a 6-digit code to ${widget.email}',
                 style: CoopvestTypography.bodyMedium.copyWith(
                   color: CoopvestColors.mediumGray,
                 ),
@@ -344,12 +351,12 @@ class _RegisterStep2ScreenState extends ConsumerState<RegisterStep2Screen> {
               ),
               const SizedBox(height: 16),
 
-              // Change Phone
+              // Change Email
               Center(
                 child: TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(
-                    'Change Phone Number',
+                    'Change Email Address',
                     style: CoopvestTypography.bodyMedium.copyWith(
                       color: CoopvestColors.primary,
                     ),

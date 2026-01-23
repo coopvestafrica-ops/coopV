@@ -64,7 +64,7 @@ class CoopvestApp extends ConsumerWidget {
         '/register-step2': (context) {
           final args = ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
           return RegisterStep2Screen(
-            phone: args?['phone'] ?? '',
+            email: args?['email'] ?? '',
             registrationData: args ?? {},
           );
         },
