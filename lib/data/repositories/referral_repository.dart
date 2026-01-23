@@ -15,7 +15,7 @@ class ReferralRepository {
     ReferralApiService? apiService,
     AuthRepository? authRepository,
     LoggerService? logger,
-  })  : _apiService = apiService ?? ApiClient().getReferralApiService(),
+  })  : _apiService = apiService ?? ReferralApiService(ApiClient().dio),
         _authRepository = authRepository ?? AuthRepository(ApiClient()),
         _logger = logger ?? LoggerService();
 

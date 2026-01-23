@@ -78,7 +78,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 borrowerName: loanDetails['borrowerName'],
                 loanAmount: loanDetails['amount'],
                 loanType: loanDetails['loanType'] ?? 'Quick Loan',
-                loanTenor: loanDetails['tenor'] ?? 12,
+                loanTenor: loanDetails['duration'] ?? 12,
                 guarantorId: widget.guarantorId,
                 guarantorName: widget.guarantorName,
               ),

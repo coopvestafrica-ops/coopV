@@ -1,10 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/referral_models.dart';
-
+import '../../core/network/api_client.dart';
+import 'package:dio/dio.dart';
 
 /// API Service for Referral Operations
+
 class ReferralApiService {
-  ReferralApiService();
+  final Dio _dio;
+  ReferralApiService(this._dio);
 
   /// Get user's referral summary
 
@@ -171,7 +174,8 @@ class ReferralApiService {
 
 /// Referral API Service Provider
 final referralApiServiceProvider = Provider<ReferralApiService>((ref) {
-  return ReferralApiService();
+  final apiClient = ref.watch(apiClientProvider);
+  return ReferralApiService(apiClient.dio);
 });
 
 // ============== Request Models ==============
