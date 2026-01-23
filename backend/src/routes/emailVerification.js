@@ -6,7 +6,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { query, validationResult } = require('express-validator');
+const { query, body, validationResult } = require('express-validator');
 const emailVerificationService = require('../services/emailVerificationService');
 const logger = require('../utils/logger');
 
@@ -208,6 +208,87 @@ router.get('/email-verification-status', [
     });
   } catch (error) {
     logger.error('Get verification status error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/v1/auth/verify-otp
+ * Verify email with 6-digit OTP
+ */
+router.post('/verify-otp', [
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('otp').isLength({ min: 6, max: 6 }).withMessage('6-digit verification code is required')
+], validate, async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const result = await emailVerificationService.verifyOTP(email, otp);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        error: result.error
+      });
+    }
+
+    res.json({
+      success: true,
+      message: result.message,
+      user: result.user
+    });
+  } catch (error) {
+    logger.error('Verify OTP error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/v1/auth/resend-otp
+ * Alias for resend-verification-email to match frontend expectations
+ */
+router.post('/resend-otp', [
+  body('email').isEmail().withMessage('Valid email is required')
+], validate, async (req, res) => {
+  try {
+    const { email } = req.body;
+    const frontendUrl = req.body.frontendUrl || process.env.FRONTEND_URL || 'http://localhost:3000';
+
+    const result = await emailVerificationService.resendVerificationEmail(email, frontendUrl);
+
+    if (!result.success) {
+      return res.status(429).json({
+        success: false,
+        error: result.error,
+        remainingSeconds: result.remainingSeconds,
+        canResendAt: result.canResendAt
+      });
+    }
+
+    // In development, return the OTP
+    if (result.otp) {
+      return res.json({
+        success: true,
+        message: result.message,
+        otp: result.otp,
+        cooldownSeconds: result.cooldown,
+        note: 'This code is only visible in development mode'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: result.message,
+      cooldownSeconds: result.cooldown
+    });
+  } catch (error) {
+    logger.error('Resend OTP error:', error);
     res.status(500).json({
       success: false,
       error: error.message

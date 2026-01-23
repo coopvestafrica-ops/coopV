@@ -28,7 +28,7 @@ const createTransporter = () => {
 };
 
 // Email templates
-const getVerificationEmailTemplate = (user, token, frontendUrl) => ({
+const getVerificationEmailTemplate = (user, token, otp, frontendUrl) => ({
   subject: 'Verify Your Coopvest Africa Account',
   html: `
     <!DOCTYPE html>
@@ -42,8 +42,8 @@ const getVerificationEmailTemplate = (user, token, frontendUrl) => ({
         .button { display: inline-block; background: #1B5E20; color: white; padding: 14px 28px; 
                   text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }
         .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
-        .code { background: #e8f5e9; padding: 15px; text-align: center; font-size: 24px; 
-                letter-spacing: 4px; font-weight: bold; border-radius: 6px; margin: 20px 0; }
+        .code { background: #e8f5e9; padding: 15px; text-align: center; font-size: 32px; 
+                letter-spacing: 8px; font-weight: bold; border-radius: 6px; margin: 20px 0; color: #1B5E20; }
       </style>
     </head>
     <body>
@@ -55,14 +55,16 @@ const getVerificationEmailTemplate = (user, token, frontendUrl) => ({
         <div class="content">
           <p>Hi ${user.name},</p>
           <p>Thank you for registering with Coopvest Africa. To complete your account setup, 
-             please verify your email address.</p>
+             please use the verification code below:</p>
+          
+          <div class="code">${otp}</div>
+          
+          <p>Alternatively, you can click the button below to verify your email:</p>
           <p style="text-align: center;">
             <a href="${frontendUrl}/verify-email?token=${token}&email=${user.email}" 
                class="button">Verify Email Address</a>
           </p>
-          <p>Or copy and paste this verification link into your browser:</p>
-          <p style="word-break: break-all; color: #1B5E20;">${frontendUrl}/verify-email?token=${token}&email=${user.email}</p>
-          <p><strong>This link will expire in ${VERIFICATION_EXPIRY_HOURS} hours.</strong></p>
+          <p><strong>This code and link will expire in ${VERIFICATION_EXPIRY_HOURS} hours.</strong></p>
           <p>If you didn't create an account with Coopvest Africa, please ignore this email.</p>
         </div>
         <div class="footer">
@@ -77,12 +79,14 @@ const getVerificationEmailTemplate = (user, token, frontendUrl) => ({
     Hi ${user.name},
     
     Thank you for registering with Coopvest Africa. To complete your account setup, 
-    please verify your email address.
+    please use the verification code below:
     
-    Click the link below or copy and paste it into your browser:
+    Verification Code: ${otp}
+    
+    Alternatively, click the link below or copy and paste it into your browser:
     ${frontendUrl}/verify-email?token=${token}&email=${user.email}
     
-    This link will expire in ${VERIFICATION_EXPIRY_HOURS} hours.
+    This code and link will expire in ${VERIFICATION_EXPIRY_HOURS} hours.
     
     If you didn't create an account with Coopvest Africa, please ignore this email.
     
@@ -142,23 +146,25 @@ class EmailVerificationService {
         };
       }
 
-      // Generate verification token
-      const token = user.generateEmailVerificationToken();
+      // Generate verification token and OTP
+      const { token, otp } = user.generateEmailVerificationToken();
       user.emailVerification.lastResendAt = new Date();
       await user.save();
 
-      const templates = getVerificationEmailTemplate(user, token, frontendUrl);
+      const templates = getVerificationEmailTemplate(user, token, otp, frontendUrl);
 
-      // In development, log the verification link instead of sending
+      // In development, log the verification link and OTP instead of sending
       if (process.env.NODE_ENV === 'development' || !process.env.SMTP_HOST) {
-        logger.info('📧 [DEV MODE] Email verification link:', {
+        logger.info('📧 [DEV MODE] Email verification:', {
           email: user.email,
+          otp,
           verificationLink: `${frontendUrl}/verify-email?token=${token}&email=${user.email}`
         });
         return {
           success: true,
-          message: 'Verification link generated (development mode)',
+          message: 'Verification code generated (development mode)',
           devLink: `${frontendUrl}/verify-email?token=${token}&email=${user.email}`,
+          otp,
           cooldown: RESEND_COOLDOWN_SECONDS
         };
       }
@@ -225,6 +231,44 @@ class EmailVerificationService {
   }
 
   /**
+   * Verify email with OTP
+   */
+  async verifyOTP(email, otp) {
+    try {
+      const user = await User.findOne({ email: email.toLowerCase() });
+
+      if (!user) {
+        return { success: false, error: 'User not found' };
+      }
+
+      if (user.emailVerification.isVerified) {
+        return { success: false, error: 'Email already verified' };
+      }
+
+      if (!user.isOTPValid(otp)) {
+        return { success: false, error: 'Invalid or expired verification code' };
+      }
+
+      await user.verifyEmail();
+      
+      logger.info(`Email verified successfully with OTP for: ${email}`);
+      
+      return {
+        success: true,
+        message: 'Email verified successfully',
+        user: {
+          userId: user.userId,
+          email: user.email,
+          name: user.name
+        }
+      };
+    } catch (error) {
+      logger.error('OTP verification failed:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Resend verification email with cooldown
    */
   async resendVerificationEmail(email, frontendUrl = process.env.FRONTEND_URL) {
@@ -250,8 +294,8 @@ class EmailVerificationService {
         };
       }
 
-      // Generate new token (overwrites old one)
-      const token = user.generateEmailVerificationToken();
+      // Generate new token and OTP (overwrites old one)
+      const { token, otp } = user.generateEmailVerificationToken();
       user.emailVerification.lastResendAt = new Date();
       await user.save();
 

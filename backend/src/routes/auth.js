@@ -90,7 +90,7 @@ router.post('/register', [
     // Send email verification
     const frontendUrl = req.body.frontendUrl || process.env.FRONTEND_URL || 'http://localhost:3000';
     try {
-      const { emailVerificationService } = require('../services/emailVerificationService');
+      const emailVerificationService = require('../services/emailVerificationService');
       await emailVerificationService.sendVerificationEmail(user, frontendUrl);
     } catch (emailError) {
       logger.warn('Failed to send verification email:', emailError.message);

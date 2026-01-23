@@ -158,6 +158,10 @@ const userSchema = new mongoose.Schema({
       type: String,
       default: null
     },
+    otp: {
+      type: String,
+      default: null
+    },
     verificationExpires: {
       type: Date,
       default: null
@@ -195,13 +199,18 @@ userSchema.statics.generateReferralCode = function(userId) {
   return `${prefix}${userPart}${random}`;
 };
 
-// Generate email verification token
+// Generate email verification token and OTP
 userSchema.methods.generateEmailVerificationToken = function() {
   const crypto = require('crypto');
   const token = crypto.randomBytes(32).toString('hex');
+  
+  // Generate 6-digit OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  
   this.emailVerification.verificationToken = token;
+  this.emailVerification.otp = otp;
   this.emailVerification.verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-  return token;
+  return { token, otp };
 };
 
 // Check if email verification token is valid
@@ -212,11 +221,20 @@ userSchema.methods.isEmailVerificationTokenValid = function(token) {
   );
 };
 
+// Check if OTP is valid
+userSchema.methods.isOTPValid = function(otp) {
+  return (
+    this.emailVerification.otp === otp &&
+    this.emailVerification.verificationExpires > new Date()
+  );
+};
+
 // Verify email
 userSchema.methods.verifyEmail = function() {
   this.emailVerification.isVerified = true;
   this.emailVerification.verifiedAt = new Date();
   this.emailVerification.verificationToken = null;
+  this.emailVerification.otp = null;
   this.emailVerification.verificationExpires = null;
   return this.save();
 };
