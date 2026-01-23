@@ -1,17 +1,15 @@
 package com.coopvestafrica.app
 
-import android.os.Bundle
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugins.GeneratedPluginRegistrant
 
 /**
- * MainActivity - Flutter v2 embedding
+ * MainActivity - Updated to FlutterFragmentActivity
  * 
- * Uses the new Flutter embedding API (io.flutter.embedding.android.FlutterActivity)
- * The old v1 embedding (io.flutter.app.FlutterActivity) has been removed.
+ * Required by the local_auth plugin for biometric authentication.
  */
-class MainActivity: FlutterActivity() {
+class MainActivity: FlutterFragmentActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine)
     }
