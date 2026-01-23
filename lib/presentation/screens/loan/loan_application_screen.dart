@@ -277,8 +277,8 @@ class _LoanApplicationScreenState extends ConsumerState<LoanApplicationScreen> {
   @override
   Widget build(BuildContext context) {
     final loanInfo = _loanTypes[_selectedLoanType]!;
-    final minAmount = loanInfo['minAmount'] as double;
-    final maxAmount = loanInfo['maxAmount'] as double;
+    final minAmount = (loanInfo['minAmount'] as num).toDouble();
+    final maxAmount = (loanInfo['maxAmount'] as num).toDouble();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -575,7 +575,7 @@ class _LoanApplicationScreenState extends ConsumerState<LoanApplicationScreen> {
   Widget _buildLoanSummary(Map<String, dynamic> loanInfo) {
     final amount = double.tryParse(_amountController.text.replaceAll(',', '')) ?? 0;
     final savings = double.tryParse(_monthlySavingsController.text) ?? 0;
-    final interestRate = loanInfo['interest'] as double;
+    final interestRate = (loanInfo['interest'] as num).toDouble();
     final tenure = loanInfo['duration'] as int;
     
     final monthlyRepayment = _calculateMonthlyRepayment(amount, interestRate, tenure);
@@ -650,7 +650,7 @@ class _LoanApplicationScreenState extends ConsumerState<LoanApplicationScreen> {
     
     final amount = double.tryParse(_amountController.text.replaceAll(',', '')) ?? 0;
     final tenure = loanInfo['duration'] as int;
-    final baseRate = loanInfo['interest'] as double;
+    final baseRate = (loanInfo['interest'] as num).toDouble();
     
     // Calculate savings from referral bonus
     final monthlyRateBefore = baseRate / 100 / 12;

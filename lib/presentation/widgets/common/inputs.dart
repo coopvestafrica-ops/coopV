@@ -96,7 +96,9 @@ class _AppTextFieldState extends State<AppTextField> {
           validator: widget.validator,
           onChanged: widget.onChanged,
           onTap: widget.onTap,
-          style: CoopvestTypography.bodyMedium,
+          style: CoopvestTypography.bodyMedium.copyWith(
+            color: CoopvestColors.darkGray,
+          ),
           decoration: InputDecoration(
             hintText: widget.hint,
             hintStyle: CoopvestTypography.bodyMedium.copyWith(
@@ -203,7 +205,9 @@ class AppDropdown<T> extends StatelessWidget {
           items: items,
           onChanged: enabled ? onChanged : null,
           validator: validator,
-          style: CoopvestTypography.bodyMedium,
+          style: CoopvestTypography.bodyMedium.copyWith(
+            color: CoopvestColors.darkGray,
+          ),
           decoration: InputDecoration(
             hintText: hint,
             prefixIcon: prefixIcon,

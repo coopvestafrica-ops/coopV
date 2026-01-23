@@ -79,7 +79,7 @@ class RolloverEligibilityScreen extends ConsumerWidget {
 
   Widget _buildLoanSummaryCard(Loan loan) {
     final outstandingBalance = loan.amount - (loan.totalRepayment * 0.65);
-    final repaymentPercentage = ((loan.totalRepayment / loan.amount * 100).clamp(0, 100) as double);
+    final repaymentPercentage = ((loan.totalRepayment / loan.amount * 100).clamp(0, 100)).toDouble();
 
     return Card(
       elevation: 2,

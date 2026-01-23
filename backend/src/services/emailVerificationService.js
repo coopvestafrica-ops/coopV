@@ -9,6 +9,7 @@ const { User } = require('../models');
 const logger = require('../utils/logger');
 
 // Configuration constants
+const NODE_ENV = process.env.NODE_ENV || (process.env.SMTP_HOST ? 'production' : 'development');
 const RESEND_COOLDOWN_SECONDS = parseInt(process.env.EMAIL_RESEND_COOLDOWN_SECONDS) || 60; // 60 seconds default
 const VERIFICATION_EXPIRY_HOURS = parseInt(process.env.EMAIL_VERIFICATION_EXPIRY_HOURS) || 24;
 
@@ -154,7 +155,7 @@ class EmailVerificationService {
       const templates = getVerificationEmailTemplate(user, token, otp, frontendUrl);
 
       // In development, log the verification link and OTP instead of sending
-      if (process.env.NODE_ENV === 'development' || !process.env.SMTP_HOST) {
+      if (NODE_ENV === 'development' || !process.env.SMTP_HOST) {
         logger.info('📧 [DEV MODE] Email verification:', {
           email: user.email,
           otp,

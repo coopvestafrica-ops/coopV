@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../config/theme_config.dart';
+import '../../widgets/common/buttons.dart';
 
 /// Welcome Screen - Entry point for new users
 class WelcomeScreen extends StatefulWidget {
@@ -129,17 +130,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       // Skip Button
                       if (_currentPage < slides.length - 1)
                         Expanded(
-                          child: OutlinedButton(
+                          child: SecondaryButton(
+                            label: 'Skip',
                             onPressed: () {
                               Navigator.of(context).pushReplacementNamed('/login');
                             },
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              side: const BorderSide(
-                                color: CoopvestColors.lightGray,
-                              ),
-                            ),
-                            child: const Text('Skip'),
                           ),
                         ),
                       if (_currentPage < slides.length - 1)
@@ -147,7 +142,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                       // Next/Get Started Button
                       Expanded(
-                        child: ElevatedButton(
+                        child: PrimaryButton(
+                          label: _currentPage == slides.length - 1
+                              ? 'Get Started'
+                              : 'Next',
                           onPressed: () {
                             if (_currentPage == slides.length - 1) {
                               Navigator.of(context).pushReplacementNamed('/login');
@@ -158,11 +156,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               );
                             }
                           },
-                          child: Text(
-                            _currentPage == slides.length - 1
-                                ? 'Get Started'
-                                : 'Next',
-                          ),
                         ),
                       ),
                     ],

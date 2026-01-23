@@ -322,7 +322,7 @@ class LoanDetailsScreen extends ConsumerWidget {
               ),
             ),
             Text(
-              '\u20a6${(installment['amount'] as double).formatNumber()}',
+              '\u20a6${(installment['amount'] as num).toDouble().formatNumber()}',
               style: CoopvestTypography.bodyMedium.copyWith(
                 fontWeight: FontWeight.w600,
                 color: statusColor,

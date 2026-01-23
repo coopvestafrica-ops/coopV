@@ -71,7 +71,7 @@ class LoanDashboardScreen extends ConsumerWidget {
                   Expanded(
                     child: _buildStatCard(
                       'Total Borrowed',
-                      '₦${(_quickStats['totalBorrowed'] as double).toStringAsFixed(0)}',
+                      '₦${(_quickStats['totalBorrowed'] as num).toDouble().toStringAsFixed(0)}',
                       Icons.account_balance,
                       CoopvestColors.primary,
                     ),
@@ -84,7 +84,7 @@ class LoanDashboardScreen extends ConsumerWidget {
                   Expanded(
                     child: _buildStatCard(
                       'Total Repaid',
-                      '₦${(_quickStats['totalRepaid'] as double).toStringAsFixed(0)}',
+                      '₦${(_quickStats['totalRepaid'] as num).toDouble().toStringAsFixed(0)}',
                       Icons.payments,
                       CoopvestColors.info,
                     ),
