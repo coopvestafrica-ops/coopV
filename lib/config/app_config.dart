@@ -8,7 +8,7 @@ class AppConfig {
   static const String appBuild = '1';
 
   // API Configuration
-  static const String apiBaseUrl = 'https://api.coopvestafrica.com/v1';
+  static const String apiBaseUrl = 'https://coopvestafrica.com/api/v1';
   static const Duration apiTimeout = Duration(seconds: 30);
   static const int maxRetries = 3;
 

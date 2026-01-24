@@ -172,7 +172,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await featureService.init();
     
     // Simulate initialization delay
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 50));
 
     if (mounted) {
       // Navigate to welcome screen for onboarding flow

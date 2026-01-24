@@ -82,6 +82,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         _isAuthenticating = true;
       });
 
+      // Check if user has registered/logged in before by checking for a stored token
+      final authState = ref.read(authProvider);
+      if (authState.accessToken == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please log in with your email and password first to enable biometric login'),
+              backgroundColor: CoopvestColors.warning,
+            ),
+          );
+        }
+        return;
+      }
+
       // Check if biometric authentication is available
       final bool canAuthenticateWithBiometrics = await _localAuth.canCheckBiometrics;
       
@@ -108,8 +122,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       );
 
       if (didAuthenticate && mounted) {
-        // Biometric authentication successful - proceed with login
-        // In a real implementation, you would retrieve cached credentials
+        // Biometric authentication successful
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Biometric authentication successful'),
