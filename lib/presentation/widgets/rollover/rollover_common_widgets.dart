@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../config/theme_config.dart';
-import '../../../../data/models/rollover_models.dart';
+import '../../../config/theme_config.dart';
+import '../../../data/models/rollover_models.dart';
 
 /// Rollover Status Badge Widget
 class RolloverStatusBadge extends StatelessWidget {

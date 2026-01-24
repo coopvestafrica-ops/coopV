@@ -19,7 +19,7 @@ class RolloverRepository {
     RolloverApiService? apiService,
     AuthRepository? authRepository,
     LoggerService? logger,
-  })  : _apiService = apiService ?? RolloverApiService(ApiClient().getDio()),
+  })  : _apiService = apiService ?? RolloverApiService(ApiClient().dio),
         _authRepository = authRepository ?? AuthRepository(ApiClient()),
         _logger = logger ?? LoggerService();
 
