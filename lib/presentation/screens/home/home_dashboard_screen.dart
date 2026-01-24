@@ -18,6 +18,8 @@ import '../loan/qr_scanner_screen.dart';
 import '../support/support_home_screen.dart';
 import '../support/ticket_list_screen.dart';
 import '../support/ticket_detail_screen.dart';
+import '../profile/profile_settings_screen.dart';
+import 'notifications_screen.dart';
 
 /// Main Home Dashboard Screen
 class HomeDashboardScreen extends ConsumerStatefulWidget {
@@ -58,12 +60,24 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen> {
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.notifications_none, color: CoopvestColors.darkGray),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const NotificationsScreen(),
+              ),
+            );
+          },
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings, color: CoopvestColors.darkGray),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ProfileSettingsScreen(),
+                ),
+              );
+            },
           ),
         ],
       ),
