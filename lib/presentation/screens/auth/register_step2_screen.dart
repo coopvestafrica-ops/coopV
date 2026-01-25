@@ -328,11 +328,14 @@ class _RegisterStep2ScreenState extends ConsumerState<RegisterStep2Screen> {
                     else
                       GestureDetector(
                         onTap: _isResending ? null : _resendOTP,
-                        child: Text(
-                          _isResending ? 'Sending...' : 'Resend Code',
-                          style: CoopvestTypography.bodyMedium.copyWith(
-                            color: CoopvestColors.primary,
-                            fontWeight: FontWeight.w600,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          child: Text(
+                            _isResending ? 'Sending...' : 'Resend Code',
+                            style: CoopvestTypography.bodyMedium.copyWith(
+                              color: CoopvestColors.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),

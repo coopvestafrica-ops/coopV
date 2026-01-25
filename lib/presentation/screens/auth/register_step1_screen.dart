@@ -461,7 +461,7 @@ class _RegisterStep1ScreenState extends ConsumerState<RegisterStep1Screen> {
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            Navigator.of(context).pushReplacementNamed('/login');
+                            Navigator.of(context).pushNamed('/login');
                           },
                       ),
                     ],

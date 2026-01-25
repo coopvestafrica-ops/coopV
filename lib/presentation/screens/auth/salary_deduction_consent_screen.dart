@@ -215,7 +215,7 @@ class _SalaryDeductionConsentScreenState
               // Accept Button
               PrimaryButton(
                 label: 'Accept & Continue',
-                onPressed: _isSubmitting ? () {} : () { _submitConsent(); },
+                onPressed: _isSubmitting ? null : _submitConsent,
                 isLoading: _isSubmitting,
                 isEnabled: !_isSubmitting,
                 width: double.infinity,
@@ -241,7 +241,7 @@ class _SalaryDeductionConsentScreenState
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context);
-                            Navigator.of(context).pushReplacementNamed('/home');
+                            Navigator.of(context).pushNamed('/home');
                           },
                           child: const Text('Proceed Without Loans'),
                         ),
