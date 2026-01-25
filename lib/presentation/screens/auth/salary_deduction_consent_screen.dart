@@ -215,7 +215,7 @@ class _SalaryDeductionConsentScreenState
               // Accept Button
               PrimaryButton(
                 label: 'Accept & Continue',
-                onPressed: _isSubmitting ? null : _submitConsent,
+                onPressed: _submitConsent,
                 isLoading: _isSubmitting,
                 isEnabled: !_isSubmitting,
                 width: double.infinity,

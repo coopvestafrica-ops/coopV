@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../config/theme_config.dart';
 
 /// Primary Button Component
 class PrimaryButton extends StatelessWidget {
   final String label;
-  final VoidCallback onPressed;
+  final FutureOr<void> Function() onPressed;
   final bool isLoading;
   final bool isEnabled;
   final double? width;
@@ -79,7 +80,7 @@ class PrimaryButton extends StatelessWidget {
 /// Secondary Button Component
 class SecondaryButton extends StatelessWidget {
   final String label;
-  final VoidCallback onPressed;
+  final FutureOr<void> Function() onPressed;
   final bool isLoading;
   final bool isEnabled;
   final double? width;
@@ -156,7 +157,7 @@ class SecondaryButton extends StatelessWidget {
 /// Tertiary Button Component
 class TertiaryButton extends StatelessWidget {
   final String label;
-  final VoidCallback onPressed;
+  final FutureOr<void> Function() onPressed;
   final bool isLoading;
   final bool isEnabled;
   final double? width;
@@ -225,7 +226,7 @@ class TertiaryButton extends StatelessWidget {
 /// Icon Button Component
 class IconButtonWidget extends StatelessWidget {
   final IconData icon;
-  final VoidCallback onPressed;
+  final FutureOr<void> Function() onPressed;
   final Color? color;
   final Color? backgroundColor;
   final double size;
