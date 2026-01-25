@@ -2,6 +2,6 @@
 <resources>
     <!-- Theme -->
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
-        <item name="android:windowBackground">@color/primary</item>
+        <item name="android:windowBackground">@color/white</item>
     </style>
 </resources>
