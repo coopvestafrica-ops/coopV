@@ -133,7 +133,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           child: SecondaryButton(
                             label: 'Skip',
                             onPressed: () {
-                              Navigator.of(context).pushReplacementNamed('/login');
+                              Navigator.of(context).pushNamed('/login');
                             },
                           ),
                         ),
@@ -148,7 +148,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               : 'Next',
                           onPressed: () {
                             if (_currentPage == slides.length - 1) {
-                              Navigator.of(context).pushReplacementNamed('/login');
+                              Navigator.of(context).pushNamed('/login');
                             } else {
                               _pageController.nextPage(
                                 duration: const Duration(milliseconds: 300),

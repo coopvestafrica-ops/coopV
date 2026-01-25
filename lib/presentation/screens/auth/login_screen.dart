@@ -361,7 +361,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            Navigator.of(context).pushReplacementNamed('/register');
+                            Navigator.of(context).pushNamed('/register');
                           },
                       ),
                     ],
