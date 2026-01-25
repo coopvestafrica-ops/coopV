@@ -172,7 +172,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await featureService.init();
     
     // Simulate initialization delay
-    await Future.delayed(const Duration(seconds: 50));
+    await Future.delayed(const Duration(seconds: 3));
 
     if (mounted) {
       // Navigate to welcome screen for onboarding flow
@@ -190,20 +190,24 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             // Logo
             Container(
-              width: 100,
-              height: 100,
+              width: 120,
+              height: 120,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Center(
-                child: Text(
-                  'CV',
-                  style: TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1B5E20),
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha((255 * 0.1).toInt()),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
                   ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
