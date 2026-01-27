@@ -32,6 +32,7 @@ const ticketRoutes = require('./routes/tickets');
 const adminTicketRoutes = require('./routes/adminTickets');
 const adminRoutes = require('./routes/admin');
 const loanRoutes = require('./routes/loans');
+const walletRoutes = require('./routes/wallet');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -187,6 +188,13 @@ app.use('/api/v1/auth', emailVerificationRoutes);
 app.use('/api/v1/referrals', referralRoutes);
 app.use('/api/v1/tickets', ticketRoutes);
 app.use('/api/v1/loans', loanRoutes);
+app.use('/api/v1/wallet', walletRoutes);
+
+// Aliases for requested endpoints
+app.post('/api/auth/login', authLimiter, authRoutes);
+app.get('/api/user/profile', authRoutes);
+app.post('/api/loans/apply', loanRoutes);
+app.get('/api/wallet/balance', walletRoutes);
 
 // ==============================================================================
 // API ROUTES - ADMIN ENDPOINTS (With IP whitelist)

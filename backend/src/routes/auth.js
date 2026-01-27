@@ -260,21 +260,9 @@ router.post('/refresh', async (req, res) => {
  * GET /api/v1/auth/me
  * Get current user profile
  */
-router.get('/me', async (req, res) => {
+router.get(['/me', '/profile'], authenticate, async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        error: 'Authentication required'
-      });
-    }
-
-    const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, JWT_SECRET);
-    
-    const user = await User.findOne({ userId: decoded.userId });
+    const user = await User.findOne({ userId: req.user.userId });
     if (!user) {
       return res.status(404).json({
         success: false,

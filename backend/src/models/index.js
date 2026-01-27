@@ -11,6 +11,7 @@ const LoanQR = require('./LoanQR');
 const Ticket = require('./Ticket');
 const TicketMessage = require('./TicketMessage');
 const TicketAttachment = require('./TicketAttachment');
+const Wallet = require('./Wallet');
 
 module.exports = {
   Referral,
@@ -19,5 +20,6 @@ module.exports = {
   LoanQR,
   Ticket,
   TicketMessage,
-  TicketAttachment
+  TicketAttachment,
+  Wallet
 };
