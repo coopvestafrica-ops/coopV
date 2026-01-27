@@ -15,6 +15,10 @@ A Node.js/Express backend API for the tiered referral-based interest reduction s
 #### User Endpoints
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+| POST | `/api/auth/login` | Login user |
+| GET | `/api/user/profile` | Get user profile |
+| POST | `/api/loans/apply` | Apply for a loan |
+| GET | `/api/wallet/balance` | Get wallet balance |
 | GET | `/api/v1/referrals/summary` | Get user's referral summary |
 | GET | `/api/v1/referrals/my-code` | Get user's referral code |
 | GET | `/api/v1/referrals` | Get all user's referrals |
@@ -60,6 +64,9 @@ cp .env.example .env
 
 # Edit .env with your configuration
 nano .env
+
+# Seed the database (Initial setup)
+npm run seed
 
 # Start development server
 npm run dev

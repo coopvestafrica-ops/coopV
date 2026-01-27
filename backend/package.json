@@ -10,7 +10,8 @@
         "test:watch": "jest --watch",
         "migrate": "node migrate.js migrate",
         "migrate:status": "node migrate.js status",
-        "migrate:seed-admin": "node migrate.js seed-admin"
+        "migrate:seed-admin": "node migrate.js seed-admin",
+        "seed": "node src/seed.js"
     },
     "keywords": [
         "referral",
