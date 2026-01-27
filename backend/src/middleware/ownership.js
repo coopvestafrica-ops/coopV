@@ -23,24 +23,17 @@ const verifyLoanOwnership = async (req, res, next) => {
       });
     }
 
-    // In production, query from database:
-    // const loan = await Loan.findOne({ loanId, userId });
-    // if (!loan) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     error: 'Loan not found or access denied'
-    //   });
-    // }
-    // req.loan = loan;
-
-    // For demo, we'll trust the mock data but in production:
-    // 1. Uncomment the database query above
-    // 2. Remove the mock data fallback
-    // 3. Only allow access if loan.userId === userId
-
-    // Attach loanId to request for downstream use
+    const loan = await Loan.findOne({ loanId, userId });
+    if (!loan) {
+      return res.status(404).json({
+        success: false,
+        error: 'Loan not found or access denied'
+      });
+    }
+    
+    req.loan = loan;
     req.loanId = loanId;
-    req.loanOwnerId = userId; // In production, this comes from the database
+    req.loanOwnerId = userId;
 
     next();
   } catch (error) {
@@ -68,17 +61,15 @@ const verifyQROwnership = async (req, res, next) => {
       });
     }
 
-    // In production, query from database:
-    // const loanQR = await LoanQR.findOne({ qrId, applicantId: userId });
-    // if (!loanQR) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     error: 'QR code not found or access denied'
-    //   });
-    // }
-    // req.loanQR = loanQR;
-
-    // Attach QR info to request
+    const loanQR = await LoanQR.findOne({ qrId, applicantId: userId });
+    if (!loanQR) {
+      return res.status(404).json({
+        success: false,
+        error: 'QR code not found or access denied'
+      });
+    }
+    
+    req.loanQR = loanQR;
     req.qrId = qrId;
     req.qrOwnerId = userId;
 
@@ -100,18 +91,15 @@ const requireLoanOwnership = async (req, res, next) => {
     const { loanId } = req.params;
     const userId = req.user.userId;
 
-    // In production with real database:
-    // const loan = await Loan.findOne({ loanId });
-    // if (!loan) {
-    //   return res.status(404).json({ success: false, error: 'Loan not found' });
-    // }
-    // if (loan.userId !== userId) {
-    //   return res.status(403).json({ success: false, error: 'Access denied' });
-    // }
-    // req.loan = loan;
-
-    // For now, just log the access attempt
-    console.log(`Loan access attempt: User ${userId} accessing loan ${loanId}`);
+    const loan = await Loan.findOne({ loanId });
+    if (!loan) {
+      return res.status(404).json({ success: false, error: 'Loan not found' });
+    }
+    if (loan.userId !== userId) {
+      return res.status(403).json({ success: false, error: 'Access denied' });
+    }
+    
+    req.loan = loan;
 
     next();
   } catch (error) {

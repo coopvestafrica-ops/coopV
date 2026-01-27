@@ -7,6 +7,7 @@
 const Referral = require('./Referral');
 const User = require('./User');
 const AuditLog = require('./AuditLog');
+const Loan = require('./Loan');
 const LoanQR = require('./LoanQR');
 const Ticket = require('./Ticket');
 const TicketMessage = require('./TicketMessage');
@@ -17,6 +18,7 @@ module.exports = {
   Referral,
   User,
   AuditLog,
+  Loan,
   LoanQR,
   Ticket,
   TicketMessage,

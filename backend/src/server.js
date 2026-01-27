@@ -191,10 +191,22 @@ app.use('/api/v1/loans', loanRoutes);
 app.use('/api/v1/wallet', walletRoutes);
 
 // Aliases for requested endpoints
-app.post('/api/auth/login', authLimiter, authRoutes);
-app.get('/api/user/profile', authRoutes);
-app.post('/api/loans/apply', loanRoutes);
-app.get('/api/wallet/balance', walletRoutes);
+app.post('/api/auth/login', authLimiter, (req, res, next) => {
+  req.url = '/login';
+  authRoutes(req, res, next);
+});
+app.get('/api/user/profile', (req, res, next) => {
+  req.url = '/profile';
+  authRoutes(req, res, next);
+});
+app.post('/api/loans/apply', (req, res, next) => {
+  req.url = '/apply';
+  loanRoutes(req, res, next);
+});
+app.get('/api/wallet/balance', (req, res, next) => {
+  req.url = '/balance';
+  walletRoutes(req, res, next);
+});
 
 // ==============================================================================
 // API ROUTES - ADMIN ENDPOINTS (With IP whitelist)

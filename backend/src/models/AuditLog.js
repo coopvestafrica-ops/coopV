@@ -33,7 +33,9 @@ const auditLogSchema = new mongoose.Schema({
       'FRAUD_DETECTED',
       'SELF_REFERRAL_DETECTED',
       'DUPLICATE_DETECTED',
-      'LOAN_APPLIED_WITH_BONUS'
+      'LOAN_APPLIED_WITH_BONUS',
+      'LOAN_APPLICATION_SUBMITTED',
+      'LOAN_QR_GENERATED'
     ],
     index: true
   },

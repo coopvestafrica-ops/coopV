@@ -8,7 +8,7 @@ const express = require('express');
 const router = express.Router();
 const { body, param, query, validationResult } = require('express-validator');
 const { v4: uuidv4 } = require('uuid');
-const { User, Referral, AuditLog, LoanQR } = require('../models');
+const { User, Referral, AuditLog, Loan, LoanQR } = require('../models');
 const referralService = require('../services/referralService');
 const qrCodeService = require('../services/qrCodeService');
 const websocketService = require('../services/websocketService');
@@ -91,7 +91,7 @@ router.post('/apply', authenticate, [
 
     const loanId = `LOAN-${uuidv4().substring(0, 8).toUpperCase()}`;
 
-    const loan = {
+    const loan = new Loan({
       loanId,
       userId,
       loanType,
@@ -104,9 +104,10 @@ router.post('/apply', authenticate, [
       monthlyRepayment: calculation.monthlyRepaymentAfterBonus,
       totalRepayment: calculation.monthlyRepaymentAfterBonus * tenureMonths,
       savingsFromBonus: calculation.totalSavingsFromBonus,
-      status: 'pending',
-      createdAt: new Date()
-    };
+      status: 'pending'
+    });
+
+    await loan.save();
 
     if (bonusResult?.success) {
       await AuditLog.log({
@@ -234,20 +235,7 @@ router.post('/:loanId/generate-qr', authenticate, [
 router.get('/', authenticate, async (req, res) => {
   try {
     const userId = req.user.userId;
-
-    const loans = [
-      {
-        loanId: 'LOAN-ABC123',
-        loanType: 'Quick Loan',
-        amount: 50000,
-        tenure: 4,
-        monthlyRepayment: 13125,
-        status: 'active',
-        effectiveInterestRate: 7.5,
-        createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-      }
-    ];
-
+    const loans = await Loan.find({ userId }).sort({ createdAt: -1 });
     res.json({ success: true, loans, total: loans.length });
   } catch (error) {
     logger.error('Error getting loans:', error);
@@ -265,21 +253,11 @@ router.get('/:loanId', authenticate, [
 ], validate, verifyLoanOwnership, async (req, res) => {
   try {
     const { loanId } = req.params;
-
-    const loan = {
-      loanId,
-      loanType: 'Quick Loan',
-      amount: 50000,
-      tenure: 4,
-      monthlyRepayment: 13125,
-      totalRepayment: 52500,
-      paidRepayments: 1,
-      remainingRepayments: 3,
-      status: 'active',
-      effectiveInterestRate: 7.5,
-      createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-      nextDueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-    };
+    const loan = await Loan.findOne({ loanId });
+    
+    if (!loan) {
+      return res.status(404).json({ success: false, error: 'Loan not found' });
+    }
 
     res.json({ success: true, loan });
   } catch (error) {

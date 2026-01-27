@@ -9,6 +9,7 @@ const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
+const { authenticate } = require('../middleware/auth');
 const logger = require('../utils/logger');
 
 const validate = (req, res, next) => {
