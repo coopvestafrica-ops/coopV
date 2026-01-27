@@ -11,12 +11,12 @@ class LoanApiService {
 
   /// Apply for a new loan
   Future<LoanResponse> applyForLoan(LoanApplicationRequest request) {
-    return _dio.post('/loans/apply', data: request).then((response) => LoanResponse.fromJson(response.data));
+    return _dio.post('/loans/apply', data: request.toJson()).then((response) => LoanResponse.fromJson(response.data));
   }
 
   /// Get all loans for a user
-  Future<LoansListResponse> getUserLoans(String userId) {
-    return _dio.get('/users/$userId/loans').then((response) => LoansListResponse.fromJson(response.data));
+  Future<LoansListResponse> getUserLoans() {
+    return _dio.get('/loans').then((response) => LoansListResponse.fromJson(response.data));
   }
 
   /// Get loan details by ID
@@ -74,26 +74,23 @@ final loanApiServiceProvider = Provider<LoanApiService>((ref) {
 /// Request/Response Models
 
 class LoanApplicationRequest {
-  final String userId;
   final String loanType;
-  final double amount;
+  final double loanAmount;
+  final int tenureMonths;
   final String purpose;
-  final double monthlySavings;
 
   LoanApplicationRequest({
-    required this.userId,
     required this.loanType,
-    required this.amount,
+    required this.loanAmount,
+    required this.tenureMonths,
     required this.purpose,
-    required this.monthlySavings,
   });
 
   Map<String, dynamic> toJson() => {
-        'user_id': userId,
-        'loan_type': loanType,
-        'amount': amount,
+        'loanType': loanType,
+        'loanAmount': loanAmount,
+        'tenureMonths': tenureMonths,
         'purpose': purpose,
-        'monthly_savings': monthlySavings,
       };
 }
 
@@ -111,7 +108,7 @@ class LoanResponse {
   factory LoanResponse.fromJson(Map<String, dynamic> json) {
     return LoanResponse(
       success: json['success'] as bool,
-      message: json['message'] as String,
+      message: json['message'] as String? ?? '',
       loan: json['loan'] != null ? LoanData.fromJson(json['loan']) : null,
     );
   }
@@ -127,7 +124,7 @@ class LoanData {
   final double monthlyRepayment;
   final String status;
   final String purpose;
-  final String qrCode;
+  final String? qrCode;
   final DateTime createdAt;
 
   LoanData({
@@ -140,23 +137,23 @@ class LoanData {
     required this.monthlyRepayment,
     required this.status,
     required this.purpose,
-    required this.qrCode,
+    this.qrCode,
     required this.createdAt,
   });
 
   factory LoanData.fromJson(Map<String, dynamic> json) {
     return LoanData(
-      id: json['id'] as String,
-      userId: json['user_id'] as String,
-      loanType: json['loan_type'] as String,
-      amount: (json['amount'] as num).toDouble(),
-      tenure: json['tenure'] as int,
-      interestRate: (json['interest_rate'] as num).toDouble(),
-      monthlyRepayment: (json['monthly_repayment'] as num).toDouble(),
-      status: json['status'] as String,
-      purpose: json['purpose'] as String,
-      qrCode: json['qr_code'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      id: json['loanId'] as String? ?? json['id'] as String? ?? '',
+      userId: json['userId'] as String? ?? '',
+      loanType: json['loanType'] as String? ?? '',
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      tenure: json['tenureMonths'] as int? ?? json['tenure'] as int? ?? 0,
+      interestRate: (json['effectiveInterestRate'] as num?)?.toDouble() ?? (json['interest_rate'] as num?)?.toDouble() ?? 0.0,
+      monthlyRepayment: (json['monthlyRepayment'] as num?)?.toDouble() ?? (json['monthly_repayment'] as num?)?.toDouble() ?? 0.0,
+      status: json['status'] as String? ?? '',
+      purpose: json['purpose'] as String? ?? '',
+      qrCode: json['qr_code'] as String?,
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : DateTime.now(),
     );
   }
 }
@@ -173,7 +170,7 @@ class LoansListResponse {
   factory LoansListResponse.fromJson(Map<String, dynamic> json) {
     return LoansListResponse(
       success: json['success'] as bool,
-      loans: (json['loans'] as List)
+      loans: (json['loans'] as List? ?? [])
           .map((e) => LoanData.fromJson(e))
           .toList(),
     );
@@ -197,7 +194,7 @@ class LoanDetailsResponse {
     return LoanDetailsResponse(
       success: json['success'] as bool,
       loan: LoanData.fromJson(json['loan']),
-      guarantors: (json['guarantors'] as List)
+      guarantors: (json['guarantors'] as List? ?? [])
           .map((e) => GuarantorData.fromJson(e))
           .toList(),
       repaymentSchedule: json['repayment_schedule'] != null
@@ -225,9 +222,9 @@ class LoanStatusResponse {
   factory LoanStatusResponse.fromJson(Map<String, dynamic> json) {
     return LoanStatusResponse(
       success: json['success'] as bool,
-      status: json['status'] as String,
-      guarantorsConfirmed: json['guarantors_confirmed'] as int,
-      guarantorsRequired: json['guarantors_required'] as int,
+      status: json['status'] as String? ?? '',
+      guarantorsConfirmed: json['guarantors_confirmed'] as int? ?? 0,
+      guarantorsRequired: json['guarantors_required'] as int? ?? 3,
       lastUpdated: json['last_updated'] != null
           ? DateTime.parse(json['last_updated'] as String)
           : null,
@@ -252,10 +249,10 @@ class GuarantorData {
 
   factory GuarantorData.fromJson(Map<String, dynamic> json) {
     return GuarantorData(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      phone: json['phone'] as String,
-      status: json['status'] as String,
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      phone: json['phone'] as String? ?? '',
+      status: json['status'] as String? ?? '',
       confirmedAt: json['confirmed_at'] != null
           ? DateTime.parse(json['confirmed_at'] as String)
           : null,
@@ -275,7 +272,7 @@ class GuarantorsListResponse {
   factory GuarantorsListResponse.fromJson(Map<String, dynamic> json) {
     return GuarantorsListResponse(
       success: json['success'] as bool,
-      guarantors: (json['guarantors'] as List)
+      guarantors: (json['guarantors'] as List? ?? [])
           .map((e) => GuarantorData.fromJson(e))
           .toList(),
     );
@@ -319,9 +316,9 @@ class GuarantorConfirmResponse {
   factory GuarantorConfirmResponse.fromJson(Map<String, dynamic> json) {
     return GuarantorConfirmResponse(
       success: json['success'] as bool,
-      message: json['message'] as String,
-      guarantorStatus: json['guarantor_status'] as String,
-      guarantorsNowConfirmed: json['guarantors_now_confirmed'] as int,
+      message: json['message'] as String? ?? '',
+      guarantorStatus: json['guarantor_status'] as String? ?? '',
+      guarantorsNowConfirmed: json['guarantors_now_confirmed'] as int? ?? 0,
     );
   }
 }
@@ -353,64 +350,51 @@ class GuarantorDeclineResponse {
   factory GuarantorDeclineResponse.fromJson(Map<String, dynamic> json) {
     return GuarantorDeclineResponse(
       success: json['success'] as bool,
-      message: json['message'] as String,
+      message: json['message'] as String? ?? '',
     );
   }
 }
 
 class LoanCancelRequest {
-  final String userId;
   final String reason;
 
-  LoanCancelRequest({
-    required this.userId,
-    required this.reason,
-  });
+  LoanCancelRequest({required this.reason});
 
-  Map<String, dynamic> toJson() => {
-        'user_id': userId,
-        'reason': reason,
-      };
+  Map<String, dynamic> toJson() => {'reason': reason};
 }
 
 class LoanCancelResponse {
   final bool success;
   final String message;
 
-  LoanCancelResponse({
-    required this.success,
-    required this.message,
-  });
+  LoanCancelResponse({required this.success, required this.message});
 
   factory LoanCancelResponse.fromJson(Map<String, dynamic> json) {
     return LoanCancelResponse(
       success: json['success'] as bool,
-      message: json['message'] as String,
+      message: json['message'] as String? ?? '',
     );
   }
 }
 
 class RepaymentScheduleData {
-  final String loanId;
   final List<RepaymentInstallment> installments;
-  final double totalRepaid;
-  final double totalRemaining;
+  final double totalInterest;
+  final double totalPrincipal;
 
   RepaymentScheduleData({
-    required this.loanId,
     required this.installments,
-    required this.totalRepaid,
-    required this.totalRemaining,
+    required this.totalInterest,
+    required this.totalPrincipal,
   });
 
   factory RepaymentScheduleData.fromJson(Map<String, dynamic> json) {
     return RepaymentScheduleData(
-      loanId: json['loan_id'] as String,
-      installments: (json['installments'] as List)
+      installments: (json['installments'] as List? ?? [])
           .map((e) => RepaymentInstallment.fromJson(e))
           .toList(),
-      totalRepaid: (json['total_repaid'] as num).toDouble(),
-      totalRemaining: (json['total_remaining'] as num).toDouble(),
+      totalInterest: (json['total_interest'] as num?)?.toDouble() ?? 0.0,
+      totalPrincipal: (json['total_principal'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }
@@ -419,62 +403,46 @@ class RepaymentInstallment {
   final int installmentNumber;
   final double amount;
   final DateTime dueDate;
-  final String status; // pending, paid, overdue
-  final DateTime? paidAt;
+  final String status;
 
   RepaymentInstallment({
     required this.installmentNumber,
     required this.amount,
     required this.dueDate,
     required this.status,
-    this.paidAt,
   });
 
   factory RepaymentInstallment.fromJson(Map<String, dynamic> json) {
     return RepaymentInstallment(
-      installmentNumber: json['installment_number'] as int,
-      amount: (json['amount'] as num).toDouble(),
+      installmentNumber: json['installment_number'] as int? ?? 0,
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
       dueDate: DateTime.parse(json['due_date'] as String),
-      status: json['status'] as String,
-      paidAt: json['paid_at'] != null
-          ? DateTime.parse(json['paid_at'] as String)
-          : null,
+      status: json['status'] as String? ?? '',
     );
   }
 }
 
 class RepaymentScheduleResponse {
   final bool success;
-  final RepaymentScheduleData? schedule;
+  final RepaymentScheduleData schedule;
 
-  RepaymentScheduleResponse({
-    required this.success,
-    this.schedule,
-  });
+  RepaymentScheduleResponse({required this.success, required this.schedule});
 
   factory RepaymentScheduleResponse.fromJson(Map<String, dynamic> json) {
     return RepaymentScheduleResponse(
       success: json['success'] as bool,
-      schedule: json['schedule'] != null
-          ? RepaymentScheduleData.fromJson(json['schedule'])
-          : null,
+      schedule: RepaymentScheduleData.fromJson(json['schedule']),
     );
   }
 }
 
 class LoanRepayRequest {
-  final String userId;
   final double amount;
-  final String paymentMethod; // wallet, bank_transfer, card
+  final String paymentMethod;
 
-  LoanRepayRequest({
-    required this.userId,
-    required this.amount,
-    required this.paymentMethod,
-  });
+  LoanRepayRequest({required this.amount, required this.paymentMethod});
 
   Map<String, dynamic> toJson() => {
-        'user_id': userId,
         'amount': amount,
         'payment_method': paymentMethod,
       };
@@ -483,73 +451,19 @@ class LoanRepayRequest {
 class LoanRepayResponse {
   final bool success;
   final String message;
-  final RepaymentReceipt? receipt;
+  final String transactionId;
 
   LoanRepayResponse({
     required this.success,
     required this.message,
-    this.receipt,
+    required this.transactionId,
   });
 
   factory LoanRepayResponse.fromJson(Map<String, dynamic> json) {
     return LoanRepayResponse(
       success: json['success'] as bool,
-      message: json['message'] as String,
-      receipt: json['receipt'] != null
-          ? RepaymentReceipt.fromJson(json['receipt'])
-          : null,
-    );
-  }
-}
-
-class RepaymentReceipt {
-  final String transactionId;
-  final double amount;
-  final DateTime timestamp;
-  final String status;
-
-  RepaymentReceipt({
-    required this.transactionId,
-    required this.amount,
-    required this.timestamp,
-    required this.status,
-  });
-
-  factory RepaymentReceipt.fromJson(Map<String, dynamic> json) {
-    return RepaymentReceipt(
-      transactionId: json['transaction_id'] as String,
-      amount: (json['amount'] as num).toDouble(),
-      timestamp: DateTime.parse(json['timestamp'] as String),
-      status: json['status'] as String,
-    );
-  }
-}
-
-class LoanTypeData {
-  final String name;
-  final String description;
-  final int duration;
-  final double interestRate;
-  final double minAmount;
-  final double maxAmount;
-
-  LoanTypeData({
-    required this.name,
-    required this.description,
-    required this.duration,
-    required this.interestRate,
-    required this.minAmount,
-    required this.maxAmount,
-  });
-
-  factory LoanTypeData.fromJson(Map<String, dynamic> json) {
-    return LoanTypeData(
-      name: json['name'] as String,
-      description: json['description'] as String,
-      duration: json['duration'] as int,
-      interestRate: (json['interest_rate'] as num).toDouble(),
-      minAmount: (json['min_amount'] as num).toDouble(),
-      maxAmount: (json['max_amount'] as num).toDouble(),
+      message: json['message'] as String? ?? '',
+      transactionId: json['transaction_id'] as String? ?? '',
     );
   }
 }
@@ -558,17 +472,40 @@ class LoanTypesResponse {
   final bool success;
   final List<LoanTypeData> loanTypes;
 
-  LoanTypesResponse({
-    required this.success,
-    required this.loanTypes,
-  });
+  LoanTypesResponse({required this.success, required this.loanTypes});
 
   factory LoanTypesResponse.fromJson(Map<String, dynamic> json) {
     return LoanTypesResponse(
       success: json['success'] as bool,
-      loanTypes: (json['loan_types'] as List)
+      loanTypes: (json['loan_types'] as List? ?? [])
           .map((e) => LoanTypeData.fromJson(e))
           .toList(),
+    );
+  }
+}
+
+class LoanTypeData {
+  final String name;
+  final double minAmount;
+  final double maxAmount;
+  final double interestRate;
+  final List<int> tenures;
+
+  LoanTypeData({
+    required this.name,
+    required this.minAmount,
+    required this.maxAmount,
+    required this.interestRate,
+    required this.tenures,
+  });
+
+  factory LoanTypeData.fromJson(Map<String, dynamic> json) {
+    return LoanTypeData(
+      name: json['name'] as String? ?? '',
+      minAmount: (json['min_amount'] as num?)?.toDouble() ?? 0.0,
+      maxAmount: (json['max_amount'] as num?)?.toDouble() ?? 0.0,
+      interestRate: (json['interest_rate'] as num?)?.toDouble() ?? 0.0,
+      tenures: (json['tenures'] as List? ?? []).cast<int>(),
     );
   }
 }

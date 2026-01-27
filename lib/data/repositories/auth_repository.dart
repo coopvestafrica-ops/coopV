@@ -48,19 +48,19 @@ class AuthRepository {
     required String name,
     String? phone,
     String? deviceId,
+    String? referralCode,
   }) async {
     try {
-      final request = RegisterRequest(
-        email: email,
-        password: password,
-        name: name,
-        phone: phone,
-        deviceId: deviceId,
-      );
-
       final response = await _apiClient.post(
         '/auth/register',
-        data: request.toJson(),
+        data: {
+          'email': email,
+          'password': password,
+          'name': name,
+          'phone': phone,
+          'deviceId': deviceId,
+          'referralCode': referralCode,
+        },
       );
 
       return AuthResponse.fromJson(response as Map<String, dynamic>);
@@ -100,7 +100,7 @@ class AuthRepository {
   Future<AuthResponse> refreshToken(String refreshToken) async {
     try {
       final response = await _apiClient.post(
-        '/auth/refresh-token',
+        '/auth/refresh',
         data: {'refresh_token': refreshToken},
       );
 
@@ -127,6 +127,10 @@ class AuthRepository {
   Future<User> getCurrentUser() async {
     try {
       final response = await _apiClient.get('/auth/me');
+      // The backend returns { success: true, user: { ... } }
+      if (response is Map<String, dynamic> && response.containsKey('user')) {
+        return User.fromJson(response['user'] as Map<String, dynamic>);
+      }
       return User.fromJson(response as Map<String, dynamic>);
     } catch (e) {
       logger.e('Get current user error: $e');

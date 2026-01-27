@@ -18,7 +18,19 @@ class WalletRepository {
   /// Get wallet
   Future<Wallet> getWallet() async {
     try {
-      final response = await _apiClient.get('/wallet');
+      final response = await _apiClient.get('/wallet/balance');
+      // Backend returns { success: true, balance: ..., recentTransactions: ... }
+      // We need to map this to the Wallet model
+      if (response is Map<String, dynamic>) {
+        return Wallet(
+          id: '',
+          userId: '',
+          balance: (response['balance'] as num?)?.toDouble() ?? 0.0,
+          currency: response['currency'] as String? ?? 'NGN',
+          totalContributions: 0.0, // Not provided by /balance
+          lastUpdated: response['lastUpdated'] != null ? DateTime.parse(response['lastUpdated'] as String) : DateTime.now(),
+        );
+      }
       return Wallet.fromJson(response as Map<String, dynamic>);
     } catch (e) {
       logger.e('Get wallet error: $e');
@@ -45,7 +57,7 @@ class WalletRepository {
       );
 
       final data = response as Map<String, dynamic>;
-      final transactions = (data['data'] as List)
+      final transactions = (data['transactions'] as List? ?? [])
           .map((item) => Transaction.fromJson(item as Map<String, dynamic>))
           .toList();
 
@@ -86,7 +98,7 @@ class WalletRepository {
       );
 
       final data = response as Map<String, dynamic>;
-      final contributions = (data['data'] as List)
+      final contributions = (data['data'] as List? ?? [])
           .map((item) => Contribution.fromJson(item as Map<String, dynamic>))
           .toList();
 
@@ -111,7 +123,7 @@ class WalletRepository {
         },
       );
 
-      return response['statement_url'] as String;
+      return response['statement_url'] as String? ?? '';
     } catch (e) {
       logger.e('Generate statement error: $e');
       rethrow;
@@ -125,7 +137,7 @@ class WalletRepository {
         '/wallet/transactions/$transactionId/receipt',
       );
 
-      return response['receipt_url'] as String;
+      return response['receipt_url'] as String? ?? '';
     } catch (e) {
       logger.e('Get transaction receipt error: $e');
       rethrow;

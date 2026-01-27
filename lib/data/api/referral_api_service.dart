@@ -10,110 +10,59 @@ class ReferralApiService {
   ReferralApiService(this._dio);
 
   /// Get user's referral summary
-
-  Future<ReferralSummaryResponse> getReferralSummary() => Future.value(
-    ReferralSummaryResponse(
-      success: true,
-      summary: null,
-    ),
-  );
+  Future<ReferralSummaryResponse> getReferralSummary() {
+    return _dio.get('/referrals/summary').then((response) => ReferralSummaryResponse.fromJson(response.data));
+  }
 
   /// Get user's referral code
-
-  Future<ReferralCodeResponse> getMyReferralCode() => Future.value(
-    ReferralCodeResponse(
-      success: true,
-      referralCode: '',
-    ),
-  );
+  Future<ReferralCodeResponse> getMyReferralCode() {
+    return _dio.get('/referrals/my-code').then((response) => ReferralCodeResponse.fromJson(response.data));
+  }
 
   /// Get all user's referrals
-
-  Future<ReferralListResponse> getMyReferrals() => Future.value(
-    ReferralListResponse(
-      success: true,
-      referrals: [],
-      total: 0,
-      page: 1,
-      limit: 20,
-    ),
-  );
+  Future<ReferralListResponse> getMyReferrals({String? status, int? page, int? limit}) {
+    return _dio.get('/referrals', queryParameters: {
+      if (status != null) 'status': status,
+      if (page != null) 'page': page,
+      if (limit != null) 'limit': limit,
+    }).then((response) => ReferralListResponse.fromJson(response.data));
+  }
 
   /// Get referral by ID
-
-  Future<ReferralDetailResponse> getReferralById(String referralId,
-  ) => Future.value(
-    ReferralDetailResponse(
-      success: true,
-      referral: null,
-    ),
-  );
+  Future<ReferralDetailResponse> getReferralById(String referralId) {
+    return _dio.get('/referrals/$referralId').then((response) => ReferralDetailResponse.fromJson(response.data));
+  }
 
   /// Register a new referral (when new user registers with code)
-
-  Future<ReferralDetailResponse> registerReferral(ReferralRegisterRequest request,
-  ) => Future.value(
-    ReferralDetailResponse(
-      success: true,
-      referral: null,
-    ),
-  );
+  Future<ReferralDetailResponse> registerReferral(ReferralRegisterRequest request) {
+    return _dio.post('/referrals/register', data: request.toJson()).then((response) => ReferralDetailResponse.fromJson(response.data));
+  }
 
   /// Check referral status and qualification
-
-  Future<ReferralStatusResponse> checkReferralStatus(String referralId,
-  ) => Future.value(
-    ReferralStatusResponse(
-      success: true,
-      qualified: false,
-      kycVerified: false,
-      savingsCriteriaMet: false,
-      consecutiveSavingsMonths: 0,
-      requiredSavingsMonths: 3,
-      isFlagged: false,
-    ),
-  );
+  Future<ReferralStatusResponse> checkReferralStatus(String referralId) {
+    return _dio.get('/referrals/$referralId/status').then((response) => ReferralStatusResponse.fromJson(response.data));
+  }
 
   /// Trigger referral confirmation process (after qualification met)
-
-  Future<ReferralDetailResponse> confirmReferral(String referralId,
-  ) => Future.value(
-    ReferralDetailResponse(
-      success: true,
-      referral: null,
-    ),
-  );
+  Future<ReferralDetailResponse> confirmReferral(String referralId, String referredUserId) {
+    return _dio.post('/referrals/$referralId/confirm', data: {'referredUserId': referredUserId}).then((response) => ReferralDetailResponse.fromJson(response.data));
+  }
 
   /// Apply referral bonus to a loan
-
-  Future<ApplyBonusResponse> applyBonusToLoan(ApplyBonusRequest request,
-  ) => Future.value(
-    ApplyBonusResponse(
-      success: true,
-      bonusPercent: 0.0,
-      loanId: '',
-    ),
-  );
+  Future<ApplyBonusResponse> applyBonusToLoan(ApplyBonusRequest request) {
+    return _dio.post('/referrals/apply-bonus', data: request.toJson()).then((response) => ApplyBonusResponse.fromJson(response.data));
+  }
 
   /// Get loan interest calculation with referral bonus
-
-  Future<InterestCalculationResponse> calculateInterestWithBonus(InterestCalculationRequest request,
-  ) => Future.value(
-    InterestCalculationResponse(
-      success: true,
-      calculation: null,
-    ),
-  );
+  Future<InterestCalculationResponse> calculateInterestWithBonus(InterestCalculationRequest request) {
+    return _dio.post('/referrals/calculate-interest', data: request.toJson()).then((response) => InterestCalculationResponse.fromJson(response.data));
+  }
 
   /// Share referral link
-
-  Future<ShareLinkResponse> getShareLink() => Future.value(
-    ShareLinkResponse(
-      success: true,
-      shareLink: '',
-      referralCode: '',
-    ),
-  );
+  Future<ShareLinkResponse> getShareLink() {
+    // This might be a client-side generation or a simple API call
+    return _dio.get('/referrals/share-link').then((response) => ShareLinkResponse.fromJson(response.data));
+  }
 
   // ============== Admin Endpoints ==============
 
@@ -122,54 +71,59 @@ class ReferralApiService {
     String? status,
     int? page,
     int? limit,
-  }) => Future.value(ReferralListResponse(
-    success: true,
-    referrals: [],
-    total: 0,
-    page: page ?? 1,
-    limit: limit ?? 20,
-  ));
+  }) {
+    return _dio.get('/admin/referrals', queryParameters: {
+      if (status != null) 'status': status,
+      if (page != null) 'page': page,
+      if (limit != null) 'limit': limit,
+    }).then((response) => ReferralListResponse.fromJson(response.data));
+  }
 
   /// Get referral statistics (admin)
-  Future<ReferralStatsResponse> getReferralStatsAdmin() => Future.value(ReferralStatsResponse(
-    success: true,
-    totalReferrals: 0,
-    pendingReferrals: 0,
-    confirmedReferrals: 0,
-    flaggedReferrals: 0,
-    referralsByTier: {},
-    totalBonusesApplied: {},
-    totalInterestSaved: 0.0,
-  ));
+  Future<ReferralStatsResponse> getReferralStatsAdmin() {
+    return _dio.get('/admin/referrals/stats').then((response) => ReferralStatsResponse.fromJson(response.data));
+  }
 
   /// Manually confirm a referral (admin)
-  Future<ReferralDetailResponse> adminConfirmReferral(String referralId, AdminConfirmRequest request,
-  ) => Future.value(ReferralDetailResponse(success: true));
+  Future<ReferralDetailResponse> adminConfirmReferral(String referralId, AdminConfirmRequest request) {
+    return _dio.post('/admin/referrals/$referralId/confirm', data: request.toJson()).then((response) => ReferralDetailResponse.fromJson(response.data));
+  }
 
   /// Flag a referral for review (admin)
-  Future<ReferralDetailResponse> adminFlagReferral(String referralId, FlagReferralRequest request,
-  ) => Future.value(ReferralDetailResponse(success: true));
+  Future<ReferralDetailResponse> adminFlagReferral(String referralId, FlagReferralRequest request) {
+    return _dio.post('/admin/referrals/$referralId/flag', data: request.toJson()).then((response) => ReferralDetailResponse.fromJson(response.data));
+  }
 
   /// Unflag a referral (admin)
-  Future<ReferralDetailResponse> adminUnflagReferral(String referralId,
-  ) => Future.value(ReferralDetailResponse(success: true));
+  Future<ReferralDetailResponse> adminUnflagReferral(String referralId) {
+    return _dio.post('/admin/referrals/$referralId/unflag').then((response) => ReferralDetailResponse.fromJson(response.data));
+  }
 
   /// Revoke referral bonus (admin)
-  Future<ReferralDetailResponse> adminRevokeBonus(String referralId, RevokeBonusRequest request,
-  ) => Future.value(ReferralDetailResponse(success: true));
+  Future<ReferralDetailResponse> adminRevokeBonus(String referralId, RevokeBonusRequest request) {
+    return _dio.post('/admin/referrals/$referralId/revoke-bonus', data: request.toJson()).then((response) => ReferralDetailResponse.fromJson(response.data));
+  }
 
   /// Get audit logs (admin)
   Future<AuditLogResponse> getAuditLogs({
     int? page,
     int? limit,
-  }) => Future.value(AuditLogResponse(success: true, logs: [], total: 0, page: 1));
+  }) {
+    return _dio.get('/admin/audit-logs', queryParameters: {
+      if (page != null) 'page': page,
+      if (limit != null) 'limit': limit,
+    }).then((response) => AuditLogResponse.fromJson(response.data));
+  }
 
   /// Update referral settings (admin)
-  Future<SettingsResponse> updateReferralSettings(ReferralSettingsRequest request,
-  ) => Future.value(SettingsResponse(success: true, enabled: true, lockInDays: 0, minimumSavingsMonths: 0));
+  Future<SettingsResponse> updateReferralSettings(ReferralSettingsRequest request) {
+    return _dio.post('/admin/referral-settings', data: request.toJson()).then((response) => SettingsResponse.fromJson(response.data));
+  }
 
   /// Get referral settings (admin)
-  Future<SettingsResponse> getReferralSettings() => Future.value(SettingsResponse(success: true, enabled: true, lockInDays: 0, minimumSavingsMonths: 0));
+  Future<SettingsResponse> getReferralSettings() {
+    return _dio.get('/admin/referral-settings').then((response) => SettingsResponse.fromJson(response.data));
+  }
 }
 
 /// Referral API Service Provider
@@ -183,30 +137,39 @@ final referralApiServiceProvider = Provider<ReferralApiService>((ref) {
 class ReferralRegisterRequest {
   final String referralCode;
   final String referredUserId;
+  final String referredUserName;
 
   ReferralRegisterRequest({
     required this.referralCode,
     required this.referredUserId,
+    required this.referredUserName,
   });
 
   Map<String, dynamic> toJson() => {
-        'referral_code': referralCode,
-        'referred_user_id': referredUserId,
+        'referralCode': referralCode,
+        'referredUserId': referredUserId,
+        'referredUserName': referredUserName,
       };
 }
 
 class ApplyBonusRequest {
   final String loanId;
-  final String userId;
+  final String loanType;
+  final double loanAmount;
+  final int tenureMonths;
 
   ApplyBonusRequest({
     required this.loanId,
-    required this.userId,
+    required this.loanType,
+    required this.loanAmount,
+    required this.tenureMonths,
   });
 
   Map<String, dynamic> toJson() => {
-        'loan_id': loanId,
-        'user_id': userId,
+        'loanId': loanId,
+        'loanType': loanType,
+        'loanAmount': loanAmount,
+        'tenureMonths': tenureMonths,
       };
 }
 
@@ -214,20 +177,17 @@ class InterestCalculationRequest {
   final String loanType;
   final double loanAmount;
   final int tenureMonths;
-  final String? userId;
 
   InterestCalculationRequest({
     required this.loanType,
     required this.loanAmount,
     required this.tenureMonths,
-    this.userId,
   });
 
   Map<String, dynamic> toJson() => {
-        'loan_type': loanType,
-        'loan_amount': loanAmount,
-        'tenure_months': tenureMonths,
-        'user_id': userId,
+        'loanType': loanType,
+        'loanAmount': loanAmount,
+        'tenureMonths': tenureMonths,
       };
 }
 
@@ -341,8 +301,8 @@ class ReferralCodeResponse {
     return ReferralCodeResponse(
       success: json['success'] as bool,
       error: json['error'] as String?,
-      referralCode: json['referral_code'] as String?,
-      qrCodeUrl: json['qr_code_url'] as String?,
+      referralCode: json['referralCode'] as String?,
+      qrCodeUrl: json['qrCodeUrl'] as String?,
     );
   }
 }
@@ -368,7 +328,7 @@ class ReferralListResponse {
     return ReferralListResponse(
       success: json['success'] as bool,
       error: json['error'] as String?,
-      referrals: (json['referrals'] as List<dynamic>)
+      referrals: (json['referrals'] as List? ?? [])
           .map((e) => Referral.fromJson(e as Map<String, dynamic>))
           .toList(),
       total: json['total'] as int? ?? 0,
@@ -402,124 +362,95 @@ class ReferralDetailResponse {
 
 class ReferralStatusResponse {
   final bool success;
-  final String? error;
   final bool qualified;
   final bool kycVerified;
   final bool savingsCriteriaMet;
   final int consecutiveSavingsMonths;
   final int requiredSavingsMonths;
   final bool isFlagged;
-  final String? flagReason;
-  final String? message;
 
   ReferralStatusResponse({
     required this.success,
-    this.error,
     required this.qualified,
     required this.kycVerified,
     required this.savingsCriteriaMet,
     required this.consecutiveSavingsMonths,
     required this.requiredSavingsMonths,
     required this.isFlagged,
-    this.flagReason,
-    this.message,
   });
 
   factory ReferralStatusResponse.fromJson(Map<String, dynamic> json) {
     return ReferralStatusResponse(
       success: json['success'] as bool,
-      error: json['error'] as String?,
       qualified: json['qualified'] as bool? ?? false,
-      kycVerified: json['kyc_verified'] as bool? ?? false,
-      savingsCriteriaMet: json['savings_criteria_met'] as bool? ?? false,
-      consecutiveSavingsMonths: json['consecutive_savings_months'] as int? ?? 0,
-      requiredSavingsMonths: json['required_savings_months'] as int? ?? 3,
-      isFlagged: json['is_flagged'] as bool? ?? false,
-      flagReason: json['flag_reason'] as String?,
-      message: json['message'] as String?,
+      kycVerified: json['kycVerified'] as bool? ?? false,
+      savingsCriteriaMet: json['savingsCriteriaMet'] as bool? ?? false,
+      consecutiveSavingsMonths: json['consecutiveSavingsMonths'] as int? ?? 0,
+      requiredSavingsMonths: json['requiredSavingsMonths'] as int? ?? 3,
+      isFlagged: json['isFlagged'] as bool? ?? false,
     );
   }
 }
 
 class ApplyBonusResponse {
   final bool success;
-  final String? error;
   final double bonusPercent;
-  final String loanId;
-  final DateTime? appliedAt;
+  final String? message;
 
   ApplyBonusResponse({
     required this.success,
-    this.error,
     required this.bonusPercent,
-    required this.loanId,
-    this.appliedAt,
+    this.message,
   });
 
   factory ApplyBonusResponse.fromJson(Map<String, dynamic> json) {
     return ApplyBonusResponse(
       success: json['success'] as bool,
-      error: json['error'] as String?,
-      bonusPercent: (json['bonus_percent'] as num).toDouble(),
-      loanId: json['loan_id'] as String,
-      appliedAt: json['applied_at'] != null
-          ? DateTime.parse(json['applied_at'] as String)
-          : null,
+      bonusPercent: (json['bonusPercent'] as num?)?.toDouble() ?? 0.0,
+      message: json['message'] as String?,
     );
   }
 }
 
 class InterestCalculationResponse {
   final bool success;
-  final String? error;
-  final LoanInterestCalculation? calculation;
+  final dynamic calculation;
 
   InterestCalculationResponse({
     required this.success,
-    this.error,
     this.calculation,
   });
 
   factory InterestCalculationResponse.fromJson(Map<String, dynamic> json) {
     return InterestCalculationResponse(
       success: json['success'] as bool,
-      error: json['error'] as String?,
-      calculation: json['calculation'] != null
-          ? LoanInterestCalculation.fromJson(json['calculation'] as Map<String, dynamic>)
-          : null,
+      calculation: json['calculation'],
     );
   }
 }
 
 class ShareLinkResponse {
   final bool success;
-  final String? error;
-  final String? shareLink;
-  final String? referralCode;
-  final String? qrCodeUrl;
+  final String shareLink;
+  final String referralCode;
 
   ShareLinkResponse({
     required this.success,
-    this.error,
-    this.shareLink,
-    this.referralCode,
-    this.qrCodeUrl,
+    required this.shareLink,
+    required this.referralCode,
   });
 
   factory ShareLinkResponse.fromJson(Map<String, dynamic> json) {
     return ShareLinkResponse(
       success: json['success'] as bool,
-      error: json['error'] as String?,
-      shareLink: json['share_link'] as String?,
-      referralCode: json['referral_code'] as String?,
-      qrCodeUrl: json['qr_code_url'] as String?,
+      shareLink: json['shareLink'] as String? ?? '',
+      referralCode: json['referralCode'] as String? ?? '',
     );
   }
 }
 
 class ReferralStatsResponse {
   final bool success;
-  final String? error;
   final int totalReferrals;
   final int pendingReferrals;
   final int confirmedReferrals;
@@ -530,7 +461,6 @@ class ReferralStatsResponse {
 
   ReferralStatsResponse({
     required this.success,
-    this.error,
     required this.totalReferrals,
     required this.pendingReferrals,
     required this.confirmedReferrals,
@@ -543,28 +473,25 @@ class ReferralStatsResponse {
   factory ReferralStatsResponse.fromJson(Map<String, dynamic> json) {
     return ReferralStatsResponse(
       success: json['success'] as bool,
-      error: json['error'] as String?,
-      totalReferrals: json['total_referrals'] as int? ?? 0,
-      pendingReferrals: json['pending_referrals'] as int? ?? 0,
-      confirmedReferrals: json['confirmed_referrals'] as int? ?? 0,
-      flaggedReferrals: json['flagged_referrals'] as int? ?? 0,
-      referralsByTier: Map<String, int>.from(json['referrals_by_tier'] as Map? ?? {}),
-      totalBonusesApplied: Map<String, double>.from(json['total_bonuses_applied'] as Map? ?? {}),
-      totalInterestSaved: (json['total_interest_saved'] as num?)?.toDouble() ?? 0,
+      totalReferrals: json['totalReferrals'] as int? ?? 0,
+      pendingReferrals: json['pendingReferrals'] as int? ?? 0,
+      confirmedReferrals: json['confirmedReferrals'] as int? ?? 0,
+      flaggedReferrals: json['flaggedReferrals'] as int? ?? 0,
+      referralsByTier: Map<String, int>.from(json['referralsByTier'] ?? {}),
+      totalBonusesApplied: Map<String, double>.from(json['totalBonusesApplied'] ?? {}),
+      totalInterestSaved: (json['totalInterestSaved'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }
 
 class AuditLogResponse {
   final bool success;
-  final String? error;
-  final List<AuditLogEntry> logs;
+  final List<dynamic> logs;
   final int total;
   final int page;
 
   AuditLogResponse({
     required this.success,
-    this.error,
     required this.logs,
     required this.total,
     required this.page,
@@ -573,81 +500,32 @@ class AuditLogResponse {
   factory AuditLogResponse.fromJson(Map<String, dynamic> json) {
     return AuditLogResponse(
       success: json['success'] as bool,
-      error: json['error'] as String?,
-      logs: (json['logs'] as List<dynamic>)
-          .map((e) => AuditLogEntry.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      logs: json['logs'] as List? ?? [],
       total: json['total'] as int? ?? 0,
       page: json['page'] as int? ?? 1,
     );
   }
 }
 
-class AuditLogEntry {
-  final String id;
-  final String action;
-  final String referralId;
-  final String? userId;
-  final String? adminId;
-  final String details;
-  final DateTime createdAt;
-
-  AuditLogEntry({
-    required this.id,
-    required this.action,
-    required this.referralId,
-    this.userId,
-    this.adminId,
-    required this.details,
-    required this.createdAt,
-  });
-
-  factory AuditLogEntry.fromJson(Map<String, dynamic> json) {
-    return AuditLogEntry(
-      id: json['id'] as String,
-      action: json['action'] as String,
-      referralId: json['referral_id'] as String,
-      userId: json['user_id'] as String?,
-      adminId: json['admin_id'] as String?,
-      details: json['details'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
-    );
-  }
-}
-
 class SettingsResponse {
   final bool success;
-  final String? error;
   final bool enabled;
   final int lockInDays;
   final int minimumSavingsMonths;
-  final double? minimumSavingsAmount;
-  final Map<String, double>? minimumInterestFloors;
 
   SettingsResponse({
     required this.success,
-    this.error,
     required this.enabled,
     required this.lockInDays,
     required this.minimumSavingsMonths,
-    this.minimumSavingsAmount,
-    this.minimumInterestFloors,
   });
 
   factory SettingsResponse.fromJson(Map<String, dynamic> json) {
     return SettingsResponse(
       success: json['success'] as bool,
-      error: json['error'] as String?,
       enabled: json['enabled'] as bool? ?? true,
-      lockInDays: json['lock_in_days'] as int? ?? 30,
-      minimumSavingsMonths: json['minimum_savings_months'] as int? ?? 3,
-      minimumSavingsAmount: json['minimum_savings_amount'] != null
-          ? (json['minimum_savings_amount'] as num).toDouble()
-          : null,
-      minimumInterestFloors: json['minimum_interest_floors'] != null
-          ? Map<String, double>.from(json['minimum_interest_floors'] as Map)
-          : null,
+      lockInDays: json['lockInDays'] as int? ?? 30,
+      minimumSavingsMonths: json['minimumSavingsMonths'] as int? ?? 3,
     );
   }
 }
-

@@ -40,22 +40,22 @@ class User extends Equatable {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'] as String,
-      email: json['email'] as String,
+      id: json['userId'] as String? ?? json['id'] as String? ?? '',
+      email: json['email'] as String? ?? '',
       phone: json['phone'] as String?,
-      name: json['name'] as String,
+      name: json['name'] as String? ?? '',
       dateOfBirth: json['date_of_birth'] as String?,
       gender: json['gender'] as String?,
       occupation: json['occupation'] as String?,
-      kycStatus: json['kyc_status'] as String? ?? 'pending',
+      kycStatus: json['kycVerified'] == true ? 'approved' : (json['kyc_status'] as String? ?? 'pending'),
       idType: json['id_type'] as String?,
       idNumber: json['id_number'] as String?,
       address: json['address'] as String?,
       city: json['city'] as String?,
       state: json['state'] as String?,
       country: json['country'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt'] as String) : (json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : DateTime.now()),
+      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt'] as String) : (json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : DateTime.now()),
     );
   }
 
@@ -155,10 +155,10 @@ class AuthResponse extends Equatable {
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     return AuthResponse(
-      accessToken: json['access_token'] as String,
-      refreshToken: json['refresh_token'] as String,
+      accessToken: json['token'] as String? ?? json['access_token'] as String? ?? '',
+      refreshToken: json['refresh_token'] as String? ?? '',
       user: User.fromJson(json['user'] as Map<String, dynamic>),
-      expiresAt: DateTime.parse(json['expires_at'] as String),
+      expiresAt: json['expires_at'] != null ? DateTime.parse(json['expires_at'] as String) : DateTime.now().add(const Duration(days: 7)),
     );
   }
 
