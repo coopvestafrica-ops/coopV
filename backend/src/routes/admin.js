@@ -453,7 +453,7 @@ router.get('/users/:userId/referrals', async (req, res) => {
     const { userId } = req.params;
     const { status } = req.query;
 
-    let query = { referral.referrerId: userId };
+    let query = { 'referral.referrerId': userId };
     if (status === 'confirmed') query.confirmed = true;
     else if (status === 'pending') query.confirmed = false;
 

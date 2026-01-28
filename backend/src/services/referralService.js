@@ -1,3 +1,16 @@
+/**
+ * Referral Service
+ * 
+ * Handles referral logic, tier calculations, and bonus applications
+ */
+
+const { Referral, User } = require('../models');
+const logger = require('../utils/logger');
+const AuditLog = require('../models/AuditLog');
+
+class ReferralService {
+  /**
+   * Apply referral bonus to a loan
    */
   async applyBonusToLoan(userId, loanId, loanType) {
     try {
@@ -179,3 +192,50 @@
     if (existingReferral) {
       return { isDuplicate: true, reason: 'Already referred by another user' };
     }
+    
+    return { isDuplicate: false };
+  }
+
+  // Helper methods
+  getBaseInterestRate(loanType) {
+    const rates = { 'PERSONAL': 15, 'EMERGENCY': 12, 'BUSINESS': 18 };
+    return rates[loanType] || 15;
+  }
+
+  getMinimumInterestFloor(loanType) {
+    const floors = { 'PERSONAL': 5, 'EMERGENCY': 4, 'BUSINESS': 7 };
+    return floors[loanType] || 5;
+  }
+
+  calculateTierBonus(count) {
+    if (count >= 50) return 5;
+    if (count >= 20) return 3;
+    if (count >= 10) return 2;
+    if (count >= 5) return 1;
+    return 0;
+  }
+
+  async getReferralSummary(userId) {
+    const user = await User.findOne({ userId });
+    return {
+      summary: {
+        currentTierBonus: user?.referral?.currentTierBonus || 0,
+        isBonusAvailable: true
+      }
+    };
+  }
+
+  async logAuditEvent(action, referralId, userId, adminId, loanId, details) {
+    await AuditLog.create({
+      action,
+      referralId,
+      userId,
+      adminId,
+      loanId,
+      details,
+      timestamp: new Date()
+    });
+  }
+}
+
+module.exports = new ReferralService();
