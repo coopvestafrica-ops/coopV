@@ -8,9 +8,11 @@ class AppConfig {
   static const String appBuild = '1';
 
   // API Configuration
-  // Note: Ensure this URL is reachable from the device. 
-  // For local development, use your machine's IP address (e.g., 'http://192.168.1.x:8080/api/v1')
-  static const String apiBaseUrl = 'https://coopvestafrica.com/api/v1';
+  // Note: 'coopvestafrica.com' is not yet live. 
+  // For local testing on Android Emulator, use 'http://10.0.2.2:8080/api/v1'
+  // For local testing on iOS Simulator, use 'http://localhost:8080/api/v1'
+  // For physical devices, use your machine's local IP (e.g., 'http://192.168.x.x:8080/api/v1')
+  static const String apiBaseUrl = 'http://10.0.2.2:8080/api/v1'; // Defaulting to Android Emulator local IP
   static const Duration apiTimeout = Duration(seconds: 30);
   static const int maxRetries = 3;
 
