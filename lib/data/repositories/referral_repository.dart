@@ -65,7 +65,7 @@ class ReferralRepository {
       if (response.success) {
         return ApiResult.success(response.referrals);
       } else {
-        return ApiResult.error(response.error ?? 'Failed to fetch referrals');
+        return ApiResult.error(response.message ?? 'Failed to fetch referrals');
       }
     } catch (e) {
       _logger.error('Get referrals error: $e');
@@ -95,7 +95,7 @@ class ReferralRepository {
       if (response.success && response.referral != null) {
         return ApiResult.success(response.referral!);
       } else {
-        return ApiResult.error(response.error ?? 'Failed to register referral');
+        return ApiResult.error(response.message ?? 'Failed to register referral');
       }
     } catch (e) {
       _logger.error('Register referral error: $e');
@@ -113,7 +113,7 @@ class ReferralRepository {
       if (response.success) {
         return ApiResult.success(response);
       } else {
-        return ApiResult.error(response.error ?? 'Failed to check status');
+        return ApiResult.error(response.message ?? 'Failed to check status');
       }
     } catch (e) {
       _logger.error('Check referral status error: $e');
@@ -131,7 +131,7 @@ class ReferralRepository {
       if (response.success && response.referral != null) {
         return ApiResult.success(response.referral!);
       } else {
-        return ApiResult.error(response.error ?? 'Failed to confirm referral');
+        return ApiResult.error(response.message ?? 'Failed to confirm referral');
       }
     } catch (e) {
       _logger.error('Confirm referral error: $e');
@@ -160,7 +160,7 @@ class ReferralRepository {
           appliedAt: response.appliedAt,
         ));
       } else {
-        return ApiResult.error(response.error ?? 'Failed to apply bonus');
+        return ApiResult.error(response.message ?? 'Failed to apply bonus');
       }
     } catch (e) {
       _logger.error('Apply bonus error: $e');
@@ -230,7 +230,7 @@ class ReferralRepository {
       if (response.success) {
         return ApiResult.success(response);
       } else {
-        return ApiResult.error(response.error ?? 'Failed to get share link');
+        return ApiResult.error(response.message ?? 'Failed to get share link');
       }
     } catch (e) {
       _logger.error('Get share link error: $e');
