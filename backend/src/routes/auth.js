@@ -11,6 +11,7 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const { authenticate } = require('../middleware/auth');
 const logger = require('../utils/logger');
+const AuditLog = require('../models/AuditLog');
 
 const validate = (req, res, next) => {
   const errors = validationResult(req);
@@ -141,6 +142,18 @@ router.post('/login', [
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
+      // Log failed login attempt
+      await AuditLog.log({
+        action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
+        userId: user.userId,
+        details: `Failed login attempt for email: ${email}`,
+        riskLevel: 'medium',
+        metadata: {
+          ipAddress: req.ip,
+          userAgent: req.get('user-agent')
+        }
+      });
+
       return res.status(401).json({
         success: false,
         error: 'Invalid credentials'

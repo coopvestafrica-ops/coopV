@@ -35,7 +35,9 @@ const auditLogSchema = new mongoose.Schema({
       'DUPLICATE_DETECTED',
       'LOAN_APPLIED_WITH_BONUS',
       'LOAN_APPLICATION_SUBMITTED',
-      'LOAN_QR_GENERATED'
+      'LOAN_QR_GENERATED',
+      'UNAUTHORIZED_ACCESS_ATTEMPT',
+      'SYSTEM_ERROR_CRITICAL'
     ],
     index: true
   },
@@ -136,6 +138,20 @@ auditLogSchema.statics.log = async function(params) {
     });
 
     await log.save();
+
+    // Trigger alert for high/critical risks
+    if (riskLevel === 'critical' || riskLevel === 'high') {
+      try {
+        // Lazy load alert service to avoid circular dependencies
+        const alertService = require('../services/alertService');
+        alertService.sendCriticalAlert(log).catch(err => {
+          console.error('Background alert sending failed:', err);
+        });
+      } catch (alertError) {
+        console.error('Failed to trigger alert service:', alertError);
+      }
+    }
+
     return log;
   } catch (error) {
     console.error('Failed to create audit log:', error);

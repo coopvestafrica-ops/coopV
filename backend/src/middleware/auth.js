@@ -7,6 +7,8 @@
 
 const jwt = require('jsonwebtoken');
 const { tokenBlacklist } = require('../services/tokenBlacklistService');
+const AuditLog = require('../models/AuditLog');
+const logger = require('../utils/logger');
 
 // Validate JWT secret at module load
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -70,7 +72,7 @@ const authenticate = async (req, res, next) => {
       });
     }
 
-    console.error('Authentication error:', error);
+    logger.error('Authentication error:', error);
     res.status(401).json({
       success: false,
       error: 'Authentication failed'
@@ -131,6 +133,20 @@ const requireAdmin = async (req, res, next) => {
       const user = await User.findOne({ userId: req.user.userId });
       
       if (!user || !['admin', 'superadmin'].includes(user.role)) {
+        // Log unauthorized admin access attempt
+        await AuditLog.log({
+          action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
+          userId: req.user.userId,
+          details: `Unauthorized admin access attempt to ${req.path}`,
+          riskLevel: 'high',
+          metadata: {
+            path: req.path,
+            method: req.method,
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent']
+          }
+        });
+
         return res.status(403).json({
           success: false,
           error: 'Admin access required'
@@ -141,7 +157,7 @@ const requireAdmin = async (req, res, next) => {
       next();
     });
   } catch (error) {
-    console.error('Admin auth error:', error);
+    logger.error('Admin auth error:', error);
     res.status(500).json({
       success: false,
       error: 'Authorization check failed'
