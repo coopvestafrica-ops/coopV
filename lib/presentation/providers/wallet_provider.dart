@@ -26,7 +26,7 @@ class WalletRepository {
           id: '',
           userId: '',
           balance: (response['balance'] as num?)?.toDouble() ?? 0.0,
-          currency: response['currency'] as String? ?? 'NGN',
+          // currency: response['currency'] as String? ?? 'NGN',
           totalContributions: 0.0, // Not provided by /balance
           lastUpdated: response['lastUpdated'] != null ? DateTime.parse(response['lastUpdated'] as String) : DateTime.now(),
         );

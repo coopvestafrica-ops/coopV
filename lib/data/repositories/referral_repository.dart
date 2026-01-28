@@ -65,7 +65,7 @@ class ReferralRepository {
       if (response.success) {
         return ApiResult.success(response.referrals);
       } else {
-        return ApiResult.error(response.message ?? 'Failed to fetch referrals');
+        return ApiResult.error(response.error ?? 'Failed to fetch referrals');
       }
     } catch (e) {
       _logger.error('Get referrals error: $e');
@@ -88,6 +88,7 @@ class ReferralRepository {
       final request = ReferralRegisterRequest(
         referralCode: referralCode,
         referredUserId: referredUserId,
+        referredUserName: 'New User', // Default name
       );
 
       final response = await _apiService.registerReferral(request);
@@ -95,7 +96,7 @@ class ReferralRepository {
       if (response.success && response.referral != null) {
         return ApiResult.success(response.referral!);
       } else {
-        return ApiResult.error(response.message ?? 'Failed to register referral');
+        return ApiResult.error(response.error ?? 'Failed to register referral');
       }
     } catch (e) {
       _logger.error('Register referral error: $e');
@@ -113,7 +114,7 @@ class ReferralRepository {
       if (response.success) {
         return ApiResult.success(response);
       } else {
-        return ApiResult.error(response.message ?? 'Failed to check status');
+        return ApiResult.error('Failed to check status');
       }
     } catch (e) {
       _logger.error('Check referral status error: $e');
@@ -126,12 +127,13 @@ class ReferralRepository {
     required String referralId,
   }) async {
     try {
-      final response = await _apiService.confirmReferral(referralId);
+      final userId = await _authRepository.getUserId();
+      final response = await _apiService.confirmReferral(referralId, userId);
 
       if (response.success && response.referral != null) {
         return ApiResult.success(response.referral!);
       } else {
-        return ApiResult.error(response.message ?? 'Failed to confirm referral');
+        return ApiResult.error(response.error ?? 'Failed to confirm referral');
       }
     } catch (e) {
       _logger.error('Confirm referral error: $e');
@@ -147,18 +149,15 @@ class ReferralRepository {
       final userId = await _authRepository.getUserId();
       final request = ApplyBonusRequest(
         loanId: loanId,
-        userId: userId,
+        loanType: 'Quick Loan', // Default type
+        loanAmount: 0, // Default amount
+        tenureMonths: 12, // Default tenure
       );
 
       final response = await _apiService.applyBonusToLoan(request);
 
       if (response.success) {
-        return ApiResult.success(ApplyBonusResponse(
-          success: true,
-          bonusPercent: response.bonusPercent,
-          loanId: response.loanId,
-          appliedAt: response.appliedAt,
-        ));
+        return ApiResult.success(response);
       } else {
         return ApiResult.error(response.message ?? 'Failed to apply bonus');
       }
@@ -240,7 +239,6 @@ class ReferralRepository {
         success: true,
         shareLink: 'https://coopvest.app/register?ref=$code',
         referralCode: code,
-        qrCodeUrl: null,
       ));
     }
   }

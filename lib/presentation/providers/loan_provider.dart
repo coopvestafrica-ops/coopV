@@ -56,11 +56,10 @@ class LoanNotifier extends StateNotifier<LoanState> {
       final userId = await _authRepository.getUserId();
       final response = await _loanApiService.applyForLoan(
         LoanApplicationRequest(
-          userId: userId,
           loanType: loanType,
-          amount: amount,
+          loanAmount: amount,
+          tenureMonths: 12, // Default tenure
           purpose: purpose,
-          monthlySavings: monthlySavings,
         ),
       );
 
@@ -89,7 +88,7 @@ class LoanNotifier extends StateNotifier<LoanState> {
     state = state.copyWith(status: LoanStatus.loading);
     try {
       final userId = await _authRepository.getUserId();
-      final response = await _loanApiService.getUserLoans(userId);
+      final response = await _loanApiService.getUserLoans();
 
       if (response.success) {
         state = state.copyWith(
@@ -224,7 +223,6 @@ class LoanNotifier extends StateNotifier<LoanState> {
       final response = await _loanApiService.makeRepayment(
         loanId,
         LoanRepayRequest(
-          userId: userId,
           amount: amount,
           paymentMethod: paymentMethod,
         ),
