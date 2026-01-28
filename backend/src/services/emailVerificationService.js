@@ -15,6 +15,17 @@ const VERIFICATION_EXPIRY_HOURS = parseInt(process.env.EMAIL_VERIFICATION_EXPIRY
 
 // Create transporter (configure with your email provider)
 const createTransporter = () => {
+  // Check if using Gmail
+  if (process.env.SMTP_HOST && process.env.SMTP_HOST.includes('gmail.com')) {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+      }
+    });
+  }
+
   return nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT),

@@ -8,6 +8,8 @@ class AppConfig {
   static const String appBuild = '1';
 
   // API Configuration
+  // Note: Ensure this URL is reachable from the device. 
+  // For local development, use your machine's IP address (e.g., 'http://192.168.1.x:8080/api/v1')
   static const String apiBaseUrl = 'https://coopvestafrica.com/api/v1';
   static const Duration apiTimeout = Duration(seconds: 30);
   static const int maxRetries = 3;
