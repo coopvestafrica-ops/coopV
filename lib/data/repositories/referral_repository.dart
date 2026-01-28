@@ -230,7 +230,7 @@ class ReferralRepository {
       if (response.success) {
         return ApiResult.success(response);
       } else {
-        return ApiResult.error(response.message ?? 'Failed to get share link');
+        return ApiResult.error('Failed to get share link');
       }
     } catch (e) {
       _logger.error('Get share link error: $e');
