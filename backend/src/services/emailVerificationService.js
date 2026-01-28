@@ -15,15 +15,13 @@ const VERIFICATION_EXPIRY_HOURS = parseInt(process.env.EMAIL_VERIFICATION_EXPIRY
 
 // Create transporter (configure with your email provider)
 const createTransporter = () => {
-  // For development/testing, use ethereal.email
-  // In production, configure with actual SMTP settings
   return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.ethereal.email',
-    port: process.env.SMTP_PORT || 587,
-    secure: false,
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT),
+    secure: process.env.SMTP_SECURE === 'true',
     auth: {
-      user: process.env.SMTP_USER || 'ethereal_user@ethereal.email',
-      pass: process.env.SMTP_PASS || 'ethereal_pass'
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
     }
   });
 };

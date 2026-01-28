@@ -26,12 +26,12 @@ class AlertService {
   async getTransporter() {
     if (!this.transporter) {
       this.transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST || 'smtp.ethereal.email',
-        port: process.env.SMTP_PORT || 587,
-        secure: false,
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT),
+        secure: process.env.SMTP_SECURE === 'true',
         auth: {
-          user: process.env.SMTP_USER || 'ethereal_user@ethereal.email',
-          pass: process.env.SMTP_PASS || 'ethereal_pass'
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS
         }
       });
     }
