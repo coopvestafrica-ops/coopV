@@ -271,42 +271,48 @@ class _RegisterStep2ScreenState extends ConsumerState<RegisterStep2Screen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: List.generate(
                   6,
-                  (index) => SizedBox(
-                    width: 50,
-                    height: 60,
-                    child: TextField(
-                      controller: _otpControllers[index],
-                      focusNode: _otpFocusNodes[index],
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      maxLength: 1,
-                      onChanged: (value) => _onOTPFieldChanged(value, index),
-                      decoration: InputDecoration(
-                        counterText: '',
-                        filled: true,
-                        fillColor: CoopvestColors.veryLightGray,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: CoopvestColors.lightGray,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: CoopvestColors.lightGray,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: CoopvestColors.primary,
-                            width: 2,
-                          ),
-                        ),
+                  (index) => Flexible(
+                    child: Container(
+                      margin: EdgeInsets.only(
+                        right: index == 5 ? 0 : 8,
                       ),
-                      style: CoopvestTypography.displaySmall.copyWith(
-                        color: CoopvestColors.darkGray,
+                      height: 60,
+                      child: TextField(
+                        controller: _otpControllers[index],
+                        focusNode: _otpFocusNodes[index],
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        maxLength: 1,
+                        onChanged: (value) => _onOTPFieldChanged(value, index),
+                        decoration: InputDecoration(
+                          counterText: '',
+                          filled: true,
+                          fillColor: CoopvestColors.veryLightGray,
+                          contentPadding: EdgeInsets.zero,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: CoopvestColors.lightGray,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: CoopvestColors.lightGray,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: CoopvestColors.primary,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        style: CoopvestTypography.displaySmall.copyWith(
+                          color: CoopvestColors.darkGray,
+                          fontSize: 20, // Slightly smaller font to fit better
+                        ),
                       ),
                     ),
                   ),
