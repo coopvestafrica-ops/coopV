@@ -157,6 +157,8 @@ class ApiClient {
       return NetworkException('Connection timeout. Please check your internet.');
     } else if (error.type == DioExceptionType.receiveTimeout) {
       return NetworkException('Request timeout. Please try again.');
+    } else if (error.type == DioExceptionType.connectionError) {
+      return NetworkException('Unable to connect to the server. Please check if the backend is running and the API URL in AppConfig is correct.');
     } else if (error.type == DioExceptionType.unknown) {
       return NetworkException('Network error. Please check your connection.');
     }
@@ -299,7 +301,7 @@ extension DioErrorExtension on DioException {
         );
       case DioExceptionType.connectionError:
         return ApiException(
-          message: 'No internet connection. Please check your network.',
+          message: 'Unable to connect to the server. Please check if the backend is running and the API URL in AppConfig is correct.',
           statusCode: -1,
         );
       case DioExceptionType.unknown:
