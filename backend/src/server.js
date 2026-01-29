@@ -234,7 +234,7 @@ app.use(errorHandler);
 // ==============================================================================
 // START SERVER
 // ==============================================================================
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   logger.info(`🚀 Coopvest Referral API running on port ${PORT}`);
   logger.info(`🌐 WebSocket endpoint: ws://localhost:${PORT}/ws`);
   logger.info(`💚 Health check: http://localhost:${PORT}/health`);
