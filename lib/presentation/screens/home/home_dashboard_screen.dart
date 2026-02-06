@@ -93,19 +93,7 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Welcome back,',
-                  style: CoopvestTypography.bodyMedium.copyWith(
-                    color: CoopvestColors.mediumGray,
-                  ),
-                ),
-                Text(
-                  userName,
-                  style: CoopvestTypography.headlineLarge.copyWith(
-                    color: CoopvestColors.darkGray,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                _buildTimeBasedGreeting(userName),
                 const SizedBox(height: 24),
                 Row(
                   children: [
@@ -690,6 +678,50 @@ class _HomeDashboardScreenState extends ConsumerState<HomeDashboardScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildTimeBasedGreeting(String userName) {
+    final hour = DateTime.now().hour;
+    String greeting;
+    IconData icon;
+    
+    if (hour < 12) {
+      greeting = 'Good morning';
+      icon = Icons.wb_sunny_outlined;
+    } else if (hour < 17) {
+      greeting = 'Good afternoon';
+      icon = Icons.wb_twilight;
+    } else {
+      greeting = 'Good evening';
+      icon = Icons.nights_stay;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: CoopvestColors.primary, size: 24),
+            const SizedBox(width: 8),
+            Text(
+              greeting,
+              style: CoopvestTypography.headlineMedium.copyWith(
+                color: CoopvestColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          userName,
+          style: CoopvestTypography.headlineLarge.copyWith(
+            color: CoopvestColors.darkGray,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }
